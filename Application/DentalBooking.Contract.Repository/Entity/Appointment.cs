@@ -27,6 +27,7 @@ namespace DentalBooking.Contract.Repository.Entity
         public int TreatmentPlanId { get;set; }
         public virtual TreatmentPlans? TreatmentPlans { get; set; }
         
+        public virtual ICollection<Appointment_Service>? Appointment_Services { get; set; }
 
     }
 }
