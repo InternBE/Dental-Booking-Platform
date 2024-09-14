@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\DentalBooking.Core\DentalBooking.Core.csproj" />
+    <ProjectReference Include="..\DentalBooking_Contract_Services\DentalBooking_Contract_Services.csproj" />
   </ItemGroup>
 
 </Project>

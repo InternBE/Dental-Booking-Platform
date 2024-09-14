@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DentalBooking.Core.Base;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DentalBooking.Contract.Repository.Entity
 {
-    public class Message
+    public class Message : BaseEntity
     {
         public string Content { get; set; } = string.Empty;
         public DateTime SendDate { get; set; }

@@ -15,16 +15,19 @@ namespace DentalBooking.Contract.Repository.Entity
         public string Status { get; set; } = "Pending";
 
         //ForeignKey
-        [ForeignKey("User")]
+        
         public int UserId { get; set; }
+        [ForeignKey("UserId")]
         public virtual User? User { get; set; }
 
-        [ForeignKey("Clinic")]
+        
         public int ClinicId { get; set; }
+        [ForeignKey("ClinicId")]
         public virtual Clinic? Clinic { get; set; }
 
-        [ForeignKey("TreatmentPlans")]
+        
         public int TreatmentPlanId { get;set; }
+        [ForeignKey("TreatmentPlanId")]
         public virtual TreatmentPlans? TreatmentPlans { get; set; }
         
         public virtual ICollection<Appointment_Service>? Appointment_Services { get; set; }
