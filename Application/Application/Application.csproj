@@ -18,8 +18,4 @@
     <ProjectReference Include="..\DentalBooking_Services\DentalBooking_Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
