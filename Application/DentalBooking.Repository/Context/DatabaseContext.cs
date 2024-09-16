@@ -26,17 +26,17 @@ namespace DentalBooking.Repository.Context
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.User)
                 .WithMany(u => u.Appointments)
-                .HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Clinic)
                 .WithMany(c => c.Appointments)
-                .HasForeignKey(a => a.ClinicId);
+                .HasForeignKey(a => a.ClinicId).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.TreatmentPlans)
                 .WithMany(t => t.Appointments)
-                .HasForeignKey(a => a.TreatmentPlanId).OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(a => a.TreatmentPlanId).OnDelete(DeleteBehavior.NoAction);
         }
 
 

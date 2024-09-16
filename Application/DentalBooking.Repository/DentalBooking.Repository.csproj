@@ -25,4 +25,8 @@
     <ProjectReference Include="..\DentalBooking.Contract.Repository\DentalBooking.Contract.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
