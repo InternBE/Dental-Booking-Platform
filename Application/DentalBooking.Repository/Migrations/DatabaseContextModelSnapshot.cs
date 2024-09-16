@@ -67,16 +67,11 @@ namespace DentalBooking.Repository.Migrations
                     b.Property<int>("TreatmentPlanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClinicId");
 
                     b.HasIndex("TreatmentPlanId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Appointments");
                 });
@@ -376,20 +371,12 @@ namespace DentalBooking.Repository.Migrations
                     b.HasOne("DentalBooking.Contract.Repository.Entity.TreatmentPlans", "TreatmentPlans")
                         .WithMany("Appointments")
                         .HasForeignKey("TreatmentPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DentalBooking.Contract.Repository.Entity.User", "User")
-                        .WithMany("Appointments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.Navigation("Clinic");
 
                     b.Navigation("TreatmentPlans");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Appointment_Service", b =>
@@ -468,8 +455,6 @@ namespace DentalBooking.Repository.Migrations
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.User", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("Messages");
 
                     b.Navigation("TreatmentPlans");
