@@ -1,4 +1,4 @@
-using DentalBooking.Contract.Repository.Entity;
+﻿using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,5 +29,17 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+
+    {
+        var context = services.GetRequiredService<DatabaseContext>();
+        context.SeedData(); // Gọi phương thức SeedData đã định nghĩa trong DatabaseContext
+    }
+
+}
 
 app.Run();
