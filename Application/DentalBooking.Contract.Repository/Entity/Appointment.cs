@@ -8,7 +8,6 @@ namespace DentalBooking.Contract.Repository.Entity
     public class Appointment : BaseEntity
     {
         public DateTime AppointmentDate { get; set; }
-        public int DentistId { get; set; }
         public string Status { get; set; } = "Pending";
 
         // ForeignKey

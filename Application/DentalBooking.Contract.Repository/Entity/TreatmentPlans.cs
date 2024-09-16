@@ -13,9 +13,7 @@ namespace DentalBooking.Contract.Repository.Entity
         public string Description { get; set; } = string.Empty;
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
-        public int DentistId { get; set; }
 
-        //References
         [ForeignKey("User")]
         public int CustomerId { get; set; }
         public virtual User? User { get; set; }
