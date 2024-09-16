@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DentalBooking.ModelViews\DentalBooking.ModelViews.csproj" />
+    <ProjectReference Include="..\DentalBooking.Repository\DentalBooking.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
