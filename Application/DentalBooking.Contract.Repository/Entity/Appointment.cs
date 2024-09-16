@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DentalBooking.Contract.Repository.Entity
 {
@@ -14,23 +11,19 @@ namespace DentalBooking.Contract.Repository.Entity
         public int DentistId { get; set; }
         public string Status { get; set; } = "Pending";
 
-        //ForeignKey
-        
+        // ForeignKey
         public int UserId { get; set; }
-        [ForeignKey("UserId")]
+        [ForeignKey(nameof(UserId))]
         public virtual User? User { get; set; }
 
-        
         public int ClinicId { get; set; }
-        [ForeignKey("ClinicId")]
+        [ForeignKey(nameof(ClinicId))]
         public virtual Clinic? Clinic { get; set; }
 
-        
-        public int TreatmentPlanId { get;set; }
-        [ForeignKey("TreatmentPlanId")]
+        public int TreatmentPlanId { get; set; }
+        [ForeignKey(nameof(TreatmentPlanId))]
         public virtual TreatmentPlans? TreatmentPlans { get; set; }
-        
-        public virtual ICollection<Appointment_Service>? Appointment_Services { get; set; }
 
+        public virtual ICollection<Appointment_Service>? Appointment_Services { get; set; }
     }
 }

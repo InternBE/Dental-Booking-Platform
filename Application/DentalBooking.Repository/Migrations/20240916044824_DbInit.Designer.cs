@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalBooking.Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240914094510_fix-error")]
-    partial class fixerror
+    [Migration("20240916044824_DbInit")]
+    partial class DbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,21 +28,6 @@ namespace DentalBooking.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ClinicUser", b =>
-                {
-                    b.Property<int>("ClinicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ClinicId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ClinicUser");
-                });
-
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Appointment", b =>
                 {
                     b.Property<int>("Id")
@@ -55,9 +40,6 @@ namespace DentalBooking.Repository.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ClinicId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ClinicId1")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
@@ -88,30 +70,18 @@ namespace DentalBooking.Repository.Migrations
                     b.Property<int>("TreatmentPlanId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TreatmentPlansId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserId1")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClinicId");
 
-                    b.HasIndex("ClinicId1");
-
                     b.HasIndex("TreatmentPlanId");
-
-                    b.HasIndex("TreatmentPlansId");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("Appointment");
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Appointment_Service", b =>
@@ -152,7 +122,7 @@ namespace DentalBooking.Repository.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("Appointments_Service");
+                    b.ToTable("Appointment_Services");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Clinic", b =>
@@ -210,7 +180,7 @@ namespace DentalBooking.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clinic");
+                    b.ToTable("Clinics");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Message", b =>
@@ -256,7 +226,7 @@ namespace DentalBooking.Repository.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Services", b =>
@@ -290,7 +260,7 @@ namespace DentalBooking.Repository.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("ServiceName")
                         .IsRequired()
@@ -393,55 +363,30 @@ namespace DentalBooking.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
-                });
+                    b.HasIndex("ClinicId");
 
-            modelBuilder.Entity("ClinicUser", b =>
-                {
-                    b.HasOne("DentalBooking.Contract.Repository.Entity.Clinic", null)
-                        .WithMany()
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DentalBooking.Contract.Repository.Entity.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Appointment", b =>
                 {
                     b.HasOne("DentalBooking.Contract.Repository.Entity.Clinic", "Clinic")
-                        .WithMany()
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("DentalBooking.Contract.Repository.Entity.Clinic", null)
                         .WithMany("Appointments")
-                        .HasForeignKey("ClinicId1");
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("DentalBooking.Contract.Repository.Entity.TreatmentPlans", "TreatmentPlans")
-                        .WithMany()
-                        .HasForeignKey("TreatmentPlanId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("DentalBooking.Contract.Repository.Entity.TreatmentPlans", null)
                         .WithMany("Appointments")
-                        .HasForeignKey("TreatmentPlansId");
+                        .HasForeignKey("TreatmentPlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("DentalBooking.Contract.Repository.Entity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("DentalBooking.Contract.Repository.Entity.User", null)
                         .WithMany("Appointments")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Clinic");
 
@@ -491,6 +436,17 @@ namespace DentalBooking.Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.User", b =>
+                {
+                    b.HasOne("DentalBooking.Contract.Repository.Entity.Clinic", "Clinic")
+                        .WithMany("Users")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+                });
+
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Appointment", b =>
                 {
                     b.Navigation("Appointment_Services");
@@ -499,6 +455,8 @@ namespace DentalBooking.Repository.Migrations
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Clinic", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Services", b =>

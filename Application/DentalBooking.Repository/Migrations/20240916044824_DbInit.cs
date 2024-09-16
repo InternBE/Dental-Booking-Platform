@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DentalBooking.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialize_db : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Clinic",
+                name: "Clinics",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -34,7 +34,7 @@ namespace DentalBooking.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Clinic", x => x.Id);
+                    table.PrimaryKey("PK_Clinics", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,7 +59,7 @@ namespace DentalBooking.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -77,35 +77,17 @@ namespace DentalBooking.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClinicUser",
-                columns: table => new
-                {
-                    ClinicId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClinicUser", x => new { x.ClinicId, x.UsersId });
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClinicUser_Clinic_ClinicId",
+                        name: "FK_Users_Clinics_ClinicId",
                         column: x => x.ClinicId,
-                        principalTable: "Clinic",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClinicUser_User_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "User",
+                        principalTable: "Clinics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Message",
+                name: "Messages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -123,11 +105,11 @@ namespace DentalBooking.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Message_User_SenderId",
+                        name: "FK_Messages_Users_SenderId",
                         column: x => x.SenderId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -154,15 +136,15 @@ namespace DentalBooking.Repository.Migrations
                 {
                     table.PrimaryKey("PK_TreatmentPlans", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TreatmentPlans_User_CustomerId",
+                        name: "FK_TreatmentPlans_Users_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Appointment",
+                name: "Appointments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -182,29 +164,29 @@ namespace DentalBooking.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Appointment", x => x.Id);
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointment_Clinic_ClinicId",
+                        name: "FK_Appointments_Clinics_ClinicId",
                         column: x => x.ClinicId,
-                        principalTable: "Clinic",
+                        principalTable: "Clinics",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Appointment_TreatmentPlans_TreatmentPlanId",
+                        name: "FK_Appointments_TreatmentPlans_TreatmentPlanId",
                         column: x => x.TreatmentPlanId,
                         principalTable: "TreatmentPlans",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Appointment_User_UserId",
+                        name: "FK_Appointments_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Appointments_Service",
+                name: "Appointment_Services",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -220,15 +202,15 @@ namespace DentalBooking.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Appointments_Service", x => x.Id);
+                    table.PrimaryKey("PK_Appointment_Services", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointments_Service_Appointment_AppointmentId",
+                        name: "FK_Appointment_Services_Appointments_AppointmentId",
                         column: x => x.AppointmentId,
-                        principalTable: "Appointment",
+                        principalTable: "Appointments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Appointments_Service_Services_ServiceId",
+                        name: "FK_Appointment_Services_Services_ServiceId",
                         column: x => x.ServiceId,
                         principalTable: "Services",
                         principalColumn: "Id",
@@ -236,72 +218,69 @@ namespace DentalBooking.Repository.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointment_ClinicId",
-                table: "Appointment",
-                column: "ClinicId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointment_TreatmentPlanId",
-                table: "Appointment",
-                column: "TreatmentPlanId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointment_UserId",
-                table: "Appointment",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_Service_AppointmentId",
-                table: "Appointments_Service",
+                name: "IX_Appointment_Services_AppointmentId",
+                table: "Appointment_Services",
                 column: "AppointmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_Service_ServiceId",
-                table: "Appointments_Service",
+                name: "IX_Appointment_Services_ServiceId",
+                table: "Appointment_Services",
                 column: "ServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClinicUser_UsersId",
-                table: "ClinicUser",
-                column: "UsersId");
+                name: "IX_Appointments_ClinicId",
+                table: "Appointments",
+                column: "ClinicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Message_SenderId",
-                table: "Message",
+                name: "IX_Appointments_TreatmentPlanId",
+                table: "Appointments",
+                column: "TreatmentPlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_UserId",
+                table: "Appointments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderId",
+                table: "Messages",
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TreatmentPlans_CustomerId",
                 table: "TreatmentPlans",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_ClinicId",
+                table: "Users",
+                column: "ClinicId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Appointments_Service");
+                name: "Appointment_Services");
 
             migrationBuilder.DropTable(
-                name: "ClinicUser");
+                name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Message");
-
-            migrationBuilder.DropTable(
-                name: "Appointment");
+                name: "Appointments");
 
             migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
-                name: "Clinic");
-
-            migrationBuilder.DropTable(
                 name: "TreatmentPlans");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Clinics");
         }
     }
 }

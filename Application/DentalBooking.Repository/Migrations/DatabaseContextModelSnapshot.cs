@@ -119,7 +119,7 @@ namespace DentalBooking.Repository.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("Appointments_Services");
+                    b.ToTable("Appointment_Services");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Clinic", b =>
@@ -257,7 +257,7 @@ namespace DentalBooking.Repository.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("ServiceName")
                         .IsRequired()
@@ -370,19 +370,19 @@ namespace DentalBooking.Repository.Migrations
                     b.HasOne("DentalBooking.Contract.Repository.Entity.Clinic", "Clinic")
                         .WithMany("Appointments")
                         .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DentalBooking.Contract.Repository.Entity.TreatmentPlans", "TreatmentPlans")
                         .WithMany("Appointments")
                         .HasForeignKey("TreatmentPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DentalBooking.Contract.Repository.Entity.User", "User")
                         .WithMany("Appointments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Clinic");
