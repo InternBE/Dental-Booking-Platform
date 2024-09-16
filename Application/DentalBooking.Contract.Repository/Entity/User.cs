@@ -16,10 +16,6 @@ namespace DentalBooking.Contract.Repository.Entity
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber {  get; set; } = string.Empty;
 
-        //References[
-        //
-        //
-        //
         [ForeignKey("Clinic")]
         public int ClinicId { get; set; }
         public virtual Clinic? Clinic { get; set; }
