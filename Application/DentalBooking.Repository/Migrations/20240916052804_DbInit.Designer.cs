@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalBooking.Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240916051532_DbInit")]
+    [Migration("20240916052804_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -226,41 +226,6 @@ namespace DentalBooking.Repository.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Roles", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastUpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastUpdatedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("RolesName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-                });
-
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Services", b =>
                 {
                     b.Property<int>("Id")
@@ -390,14 +355,9 @@ namespace DentalBooking.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClinicId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -478,15 +438,7 @@ namespace DentalBooking.Repository.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DentalBooking.Contract.Repository.Entity.Roles", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Clinic");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Appointment", b =>
@@ -498,11 +450,6 @@ namespace DentalBooking.Repository.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Roles", b =>
-                {
                     b.Navigation("Users");
                 });
 

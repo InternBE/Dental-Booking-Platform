@@ -24,10 +24,6 @@ namespace DentalBooking.Contract.Repository.Entity
         public int ClinicId { get; set; }
         public virtual Clinic? Clinic { get; set; }
 
-        [ForeignKey("Role")]
-        public int RoleId { get; set; }
-        public virtual Roles? Role { get; set; }
-
         public virtual ICollection<Appointment>? Appointments { get; set; }
         public virtual ICollection<TreatmentPlans>? TreatmentPlans { get; set; }
         

@@ -17,7 +17,6 @@ namespace DentalBooking.Repository.Context
         public DbSet<TreatmentPlans> TreatmentPlans { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Message> Messages { get; set; }
-        public DbSet<Roles> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,13 +24,6 @@ namespace DentalBooking.Repository.Context
             modelBuilder.Entity<Services>()
                 .Property(s => s.Price)
                 .HasColumnType("decimal(18, 2)");
-
-            // Cấu hình các mối quan hệ
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Role)
-                .WithMany(r => r.Users) // Đảm bảo rằng thuộc tính `Users` tồn tại trong `Role`
-                .HasForeignKey(u => u.RoleId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // Cấu hình mối quan hệ giữa User và Clinic
             modelBuilder.Entity<User>()
