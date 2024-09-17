@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DentalBooking.ModelViews.ServiceModelViews;
 
-namespace DentalBooking_Contract_Services.Interface
+namespace DentalBooking.Contract.Services
 {
     public interface IServiceServices
     {
+        Task<ServiceResponeModelViews> CreateServiceAsync(ServiceRequestModelView model);
+        Task<IEnumerable<ServiceResponeModelViews>> GetAllServicesAsync();
+        Task<ServiceResponeModelViews> GetServiceByIdAsync(int id);
+        Task<bool> UpdateServiceAsync(int id, ServiceRequestModelView model);
+        Task<bool> DeleteServiceAsync(int id);
     }
 }
