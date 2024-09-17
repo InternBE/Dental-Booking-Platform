@@ -8,8 +8,8 @@ namespace DentalBooking.ModelViews.ServiceModelViews
 {
     public class ServiceResponeModelViews
     {
-        public string ServiceName { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string? ServiceName { get; set; } 
+        public string? Description { get; set; } 
         public decimal Price { get; set; }
     }
 }

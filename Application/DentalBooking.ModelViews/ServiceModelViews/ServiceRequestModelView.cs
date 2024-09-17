@@ -10,8 +10,8 @@ namespace DentalBooking.ModelViews.ServiceModelViews
     public class ServiceRequestModelView
     {
         [Required]
-        public string ServiceName { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string? ServiceName { get; set; }
+        public string? Description { get; set; } 
         [Required]
         public decimal Price { get; set; }
     }
