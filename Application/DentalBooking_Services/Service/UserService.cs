@@ -8,7 +8,7 @@ using DentalBooking.ModelViews.UserModelViews;
 using DentalBooking_Contract_Services.Interface;
 
 
-namespace DentalBooking_Services 
+namespace DentalBooking_Services.Services
 {
     public class UserService : IUserService
     {
@@ -29,6 +29,6 @@ namespace DentalBooking_Services
             return Task.FromResult(users);
         }
 
-        
+
     }
 }

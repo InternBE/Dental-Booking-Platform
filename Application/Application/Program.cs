@@ -18,6 +18,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
            sqlOptions => sqlOptions.MigrationsAssembly("DentalBooking.Repository"));  // Chỉ định assembly chứa migrations
 });
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

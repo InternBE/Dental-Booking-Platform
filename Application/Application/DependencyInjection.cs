@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using DentalBooking.Contract.Repository.Entity;
 using DentalBooking_Contract_Services.Interface;
 using DentalBooking.Repository.Context;
-using DentalBooking_Services;
 using DentalBooking.Services;
+using DentalBooking_Services.Services;
 
 
 namespace Application.API
