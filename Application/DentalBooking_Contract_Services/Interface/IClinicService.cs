@@ -1,4 +1,5 @@
-﻿using DentalBooking.ModelViews.ClinicModelViews;
+﻿
+using DentalBooking.ModelViews.ClinicModelViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
