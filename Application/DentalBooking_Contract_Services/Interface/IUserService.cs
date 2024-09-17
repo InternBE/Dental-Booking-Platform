@@ -10,6 +10,8 @@ namespace DentalBooking_Contract_Services.Interface
     public interface IUserService
     {
         Task<IList<UserResponseModel>> GetAll();
+        Task<UserResponseModel> Create(UserRequestModel userRequest);
+
 
     }
 }

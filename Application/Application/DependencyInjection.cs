@@ -14,7 +14,7 @@ namespace Application.API
         public static void AddConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.ConfigRoute();
-            
+            services.AddDatabase(configuration);
             services.AddInfrastructure(configuration);
             services.AddServices();
         }
@@ -32,8 +32,8 @@ namespace Application.API
                 options.UseLazyLoadingProxies().UseSqlServer(configuration.GetConnectionString("MyCnn"));
             });
         }
+        
 
-       
         public static void AddServices(this IServiceCollection services)
         {
             services

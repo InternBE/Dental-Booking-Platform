@@ -3,6 +3,7 @@ using DentalBooking.ModelViews.UserModelViews;
 using DentalBooking_Contract_Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Application.Controllers
@@ -23,6 +24,20 @@ namespace Application.Controllers
             return Ok(BaseResponse<IList<UserResponseModel>>.OkResponse(a));
         }
 
-        
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] UserRequestModel userRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdUser = await _userService.Create(userRequest);
+            return CreatedAtAction(nameof(Create), new { id = createdUser.Id }, BaseResponse<UserResponseModel>.OkResponse(createdUser));
+        }
+
+
+
+
     }
 }

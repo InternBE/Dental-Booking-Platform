@@ -1,4 +1,5 @@
-﻿using DentalBooking.Contract.Repository.Entity;
+﻿using Application.API;
+using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddConfig(builder.Configuration);
+
 
 // Cấu hình DbContext với Lazy Loading và xác định assembly cho migrations
 builder.Services.AddDbContext<DatabaseContext>(options =>
