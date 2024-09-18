@@ -1,4 +1,5 @@
 ﻿using DentalBooking.Contract.Repository.Entity;
+using DentalBooking.Core.Base;
 using DentalBooking.ModelViews.UserModelViews;
 using DentalBooking_Contract_Services.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,24 @@ namespace Application.Controllers
         {
             _userService = userService;
         }
+        [HttpGet()]
+        public async Task<IActionResult> Login(int index = 1, int pageSize = 10)
+        {
+            IList<UserResponseModel> a = await _userService.GetAll();
+            return Ok(BaseResponse<IList<UserResponseModel>>.OkResponse(a));
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] UserRequestModel userRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdUser = await _userService.Create(userRequest);
+            return CreatedAtAction(nameof(Create), new { id = createdUser.Id }, BaseResponse<UserResponseModel>.OkResponse(createdUser));
+        }
         // Cập nhật thông tin User (sử dụng UserUpdateModel)
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel userModel)

@@ -10,6 +10,8 @@ namespace DentalBooking_Contract_Services.Interface
 {
     public interface IUserService
     {
+        Task<IList<User>> GetAll();
+        Task<User> Create(User userRequest);
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(int id);
         Task AddUserAsync(User user);
