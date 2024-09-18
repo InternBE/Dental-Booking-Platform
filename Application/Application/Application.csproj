@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DentalBooking.ModelViews\DentalBooking.ModelViews.csproj" />
     <ProjectReference Include="..\DentalBooking_Services\DentalBooking_Services.csproj" />
   </ItemGroup>
 
