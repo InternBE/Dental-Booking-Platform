@@ -1,5 +1,8 @@
-﻿using DentalBooking.Contract.Repository.Entity;
+﻿using DentalBooking.Contract.Repository;
+using DentalBooking.Repository;
 using DentalBooking.Repository.Context;
+using DentalBooking_Contract_Services.Interface;
+using DentalBooking_Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +20,10 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
            .UseSqlServer(builder.Configuration.GetConnectionString("MyCnn"),
            sqlOptions => sqlOptions.MigrationsAssembly("DentalBooking.Repository"));  // Chỉ định assembly chứa migrations
 });
+
+// Đăng ký UnitOfWork và Repository/Service
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
