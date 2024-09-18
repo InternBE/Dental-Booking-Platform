@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DentalBooking.Contract.Repository
+namespace DentalBooking.Contract.Repository.IUOW
 {
     public interface IUserRepository : IGenericRepository<User>
     {
@@ -18,7 +18,4 @@ namespace DentalBooking.Contract.Repository
         void Update(User user);
     }
 
-    public interface IGenericRepository<T>
-    {
-    }
 }

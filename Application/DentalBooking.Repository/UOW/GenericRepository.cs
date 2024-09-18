@@ -1,8 +1,10 @@
-﻿using DentalBooking.Contract.Repository;
-using DentalBooking.Contract.Repository.IUOW;
+﻿using DentalBooking.Contract.Repository.IUOW;
 using DentalBooking.Repository.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace DentalBooking.Repository
 {
@@ -24,6 +26,7 @@ namespace DentalBooking.Repository
 
         public async Task<T> GetByIdAsync(int id)
         {
+            // Consider using a more flexible ID type if needed
             return await _dbSet.FindAsync(id);
         }
 

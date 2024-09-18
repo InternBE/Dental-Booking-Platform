@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using DentalBooking.Contract.Repository;
 
-namespace DentalBooking_Services
+namespace DentalBooking_Services.Service
 {
     public class UserService : IUserService
     {
