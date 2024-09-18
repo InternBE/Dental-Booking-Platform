@@ -1,9 +1,9 @@
-﻿using DentalBooking.Contract.Repository; // Đảm bảo đường dẫn namespace chính xác
-using DentalBooking.Services; // Đảm bảo đường dẫn namespace chính xác
+using DentalBooking.Contract.Repository; // Đảm bảo đường dẫn namespace chính xác
+using DentalBooking.Repository; // Đảm bảo đường dẫn namespace chính xác
 using DentalBooking.Repository.Context;
-using Microsoft.EntityFrameworkCore;
-using DentalBooking.Repository;
 using DentalBooking_Contract_Services.Interface;
+using DentalBooking_Services;
+using Microsoft.EntityFrameworkCore;
 using Application.Converters; // Đảm bảo đường dẫn namespace cho TimeOnlyConverter
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +29,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 // Đăng ký các dịch vụ và triển khai của chúng
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Đảm bảo rằng UnitOfWork cài đặt IUnitOfWork
-builder.Services.AddScoped<IClinicService, ClinicService>(); // Đảm bảo rằng ClinicService cài đặt IClinicService
+builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo rằng UserService cài đặt IUserService
 
 var app = builder.Build();
 
