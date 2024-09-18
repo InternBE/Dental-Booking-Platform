@@ -11,4 +11,10 @@
     <ProjectReference Include="..\DentalBooking.Repository\DentalBooking.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="DentalBooking.ModelViews">
+      <HintPath>..\DentalBooking.ModelViews\bin\Debug\net8.0\DentalBooking.ModelViews.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

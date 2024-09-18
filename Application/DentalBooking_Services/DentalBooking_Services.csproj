@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DentalBooking.ModelViews\DentalBooking.ModelViews.csproj" />
     <ProjectReference Include="..\DentalBooking_Contract_Services\DentalBooking_Contract_Services.csproj" />
   </ItemGroup>
 

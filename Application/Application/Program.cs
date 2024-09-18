@@ -1,14 +1,20 @@
-﻿using DentalBooking.Contract.Repository;
-using DentalBooking.Repository;
+using DentalBooking.Contract.Repository; // Đảm bảo đường dẫn namespace chính xác
+using DentalBooking.Repository; // Đảm bảo đường dẫn namespace chính xác
 using DentalBooking.Repository.Context;
 using DentalBooking_Contract_Services.Interface;
 using DentalBooking_Services;
 using Microsoft.EntityFrameworkCore;
+using Application.Converters; // Đảm bảo đường dẫn namespace cho TimeOnlyConverter
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new TimeOnlyConverter()); // Thêm converter
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,9 +27,9 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
            sqlOptions => sqlOptions.MigrationsAssembly("DentalBooking.Repository"));  // Chỉ định assembly chứa migrations
 });
 
-// Đăng ký UnitOfWork và Repository/Service
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUserService, UserService>();
+// Đăng ký các dịch vụ và triển khai của chúng
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Đảm bảo rằng UnitOfWork cài đặt IUnitOfWork
+builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo rằng UserService cài đặt IUserService
 
 var app = builder.Build();
 
@@ -35,9 +41,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
