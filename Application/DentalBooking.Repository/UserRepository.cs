@@ -1,11 +1,11 @@
 ﻿using DentalBooking.Contract.Repository.Entity;
-using DentalBooking.Contract.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DentalBooking.Repository.Context;
+using DentalBooking.Contract.Repository.IUOW;
 
 namespace DentalBooking.Repository
 {

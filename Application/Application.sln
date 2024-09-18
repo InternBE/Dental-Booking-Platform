@@ -23,6 +23,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DentalBooking_Services", "DentalBooking_Services\DentalBooking_Services.csproj", "{F6845999-9B9A-4AF1-A488-8DBF731A74BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalBooking.ModelViews", "DentalBooking.ModelViews\DentalBooking.ModelViews.csproj", "{96D4109F-3A66-4C14-A6D1-776E1BBAA396}"
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalBooking.ModelViews", "DentalBooking.ModelViews\DentalBooking.ModelViews.csproj", "{8157D19D-6E6A-46D8-8EC7-4F7546B49940}"
+>>>>>>>>> Temporary merge branch 2
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,8 +61,28 @@ Global
 		{96D4109F-3A66-4C14-A6D1-776E1BBAA396}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96D4109F-3A66-4C14-A6D1-776E1BBAA396}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96D4109F-3A66-4C14-A6D1-776E1BBAA396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8157D19D-6E6A-46D8-8EC7-4F7546B49940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8157D19D-6E6A-46D8-8EC7-4F7546B49940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8157D19D-6E6A-46D8-8EC7-4F7546B49940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8157D19D-6E6A-46D8-8EC7-4F7546B49940}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5456F14B-7274-4954-A04E-F0F264E575D2} = {934C33D0-906C-42E4-9EA7-28440593B038}
+		{DD1D07A7-EFFE-4B85-9516-1C88E69CDF61} = {E344324E-C916-410A-88F6-540E64A0D942}
+		{6AE8E0A3-21B0-4043-B386-E7BFDD57A764} = {687F8175-DCE4-48E3-BC06-1B34D68E1332}
+		{2C2A07AA-8FD6-4C8A-9F04-C488E2CD31FB} = {687F8175-DCE4-48E3-BC06-1B34D68E1332}
+		{EE8015F2-B206-4D87-999B-3F68E060B8C0} = {4C1D8E5D-69CE-41FD-9DC6-D84C8FAF3B34}
+		{F6845999-9B9A-4AF1-A488-8DBF731A74BB} = {4C1D8E5D-69CE-41FD-9DC6-D84C8FAF3B34}
+
+		{96D4109F-3A66-4C14-A6D1-776E1BBAA396} = {687F8175-DCE4-48E3-BC06-1B34D68E1332}
+
+		{8157D19D-6E6A-46D8-8EC7-4F7546B49940} = {687F8175-DCE4-48E3-BC06-1B34D68E1332}
+
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {048D73EC-2B0A-472F-B109-9C4A6CCC5319}
 	EndGlobalSection
 EndGlobal

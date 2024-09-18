@@ -4,7 +4,8 @@ using DentalBooking.Repository.Context;
 using DentalBooking_Contract_Services.Interface;
 using DentalBooking_Services;
 using Microsoft.EntityFrameworkCore;
-using Application.Converters; // Đảm bảo đường dẫn namespace cho TimeOnlyConverter
+using Application.Converters;
+using DentalBooking_Services.Service; // Đảm bảo đường dẫn namespace cho TimeOnlyConverter
 
 var builder = WebApplication.CreateBuilder(args);
 
