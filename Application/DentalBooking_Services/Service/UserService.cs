@@ -1,17 +1,11 @@
 ﻿using DentalBooking.Contract.Repository.Entity;
-using DentalBooking_Contract_Services.Interface;
-using DentalBooking.ModelViews.UserModelViews;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using DentalBooking.Contract.Repository;
+using DentalBooking.ModelViews.UserModelViews;
+using DentalBooking_Contract_Services.Interface;
 
-namespace DentalBooking_Services.Service
+public class UserService : IUserService
 {
-    public class UserService : IUserService
-    {
-        private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
         public UserService(IUnitOfWork unitOfWork)
         {
@@ -58,102 +52,70 @@ namespace DentalBooking_Services.Service
             };
         }
 
-        // Lấy danh sách tất cả người dùng
-        public async Task<IList<UserResponseModel>> GetAll()
+    // Phương thức GetAll để trả về danh sách UserResponseModel
+    public async Task<IList<UserResponseModel>> GetAll()
+    {
+        var userRepository = _unitOfWork.GetRepository<User>();
+        var users = await userRepository.GetAllAsync();
+
+        var userResponseModels = users.Select(user => new UserResponseModel
         {
-            var userRepository = _unitOfWork.GetRepository<User>();
-            var users = await userRepository.GetAllAsync();
+            Id = user.Id,
+            FullName = user.FullName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            ClinicId = user.ClinicId,
+        }).ToList();
 
-            var userResponseModels = users.Select(user => new UserResponseModel
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                ClinicId = user.ClinicId,
-            }).ToList();
+        return userResponseModels;
+    }
 
-            return userResponseModels;
-        }
-
-        // Tạo mới người dùng
-        public async Task<UserResponseModel> Create(UserRequestModel userRequest)
+    // Phương thức Create để tạo người dùng mới
+    public async Task<UserResponseModel> Create(UserRequestModel userRequest)
+    {
+        var user = new User
         {
-            var user = new User
-            {
-                FullName = userRequest.FullName,
-                Email = userRequest.Email,
-                PhoneNumber = userRequest.PhoneNumber,
-                ClinicId = userRequest.ClinicId,
-            };
+            FullName = userRequest.FullName,
+            Email = userRequest.Email,
+            PhoneNumber = userRequest.PhoneNumber,
+            ClinicId = userRequest.ClinicId,
+        };
 
-            await _unitOfWork.GetRepository<User>().InsertAsync(user);
-            await _unitOfWork.SaveAsync();
+        await _unitOfWork.GetRepository<User>().InsertAsync(user);
+        await _unitOfWork.SaveAsync();
 
-            return new UserResponseModel
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber
-            };
-        }
-
-        // Cập nhật thông tin người dùng
-        public async Task UpdateUserAsync(UserUpdateModel userModel)
+        return new UserResponseModel
         {
-            if (userModel == null)
-            {
-                throw new ArgumentNullException(nameof(userModel), "UserUpdateModel object cannot be null");
-            }
+            Id = user.Id,
+            FullName = user.FullName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber
+        };
+    }
 
-            var existingUser = await _unitOfWork.Users.GetByIdAsync(userModel.Id);
-            if (existingUser == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
+    // Các phương thức khác
+    public Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        throw new NotImplementedException();
+    }
 
-            existingUser.FullName = userModel.FullName;
-            existingUser.Email = userModel.Email;
-            existingUser.PhoneNumber = userModel.PhoneNumber;
-            existingUser.ClinicId = userModel.ClinicId;
+    public Task<User> GetUserByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
 
-            _unitOfWork.Users.Update(existingUser);
-            await _unitOfWork.CompleteAsync();
-        }
+    public Task AddUserAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
 
-        // Xóa người dùng
-        public async Task DeleteUserAsync(int id)
-        {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
+    public Task UpdateUserAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
 
-            _unitOfWork.Users.Delete(user);
-            await _unitOfWork.CompleteAsync();
-        }
-
-        // Các phương thức chưa được triển khai
-        public Task<IEnumerable<User>> GetAllUsersAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> GetUserByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddUserAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateUserAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
+    public Task DeleteUserAsync(int id)
+    {
+        throw new NotImplementedException();
     }
 }
