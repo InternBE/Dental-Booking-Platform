@@ -1,11 +1,12 @@
-﻿
-using DentalBooking.Contract.Repository.Entity;
+
 using DentalBooking.ModelViews.ClinicModelViews;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DentalBooking.Contract.Repository.Entity;
 
 namespace DentalBooking_Contract_Services.Interface
 {

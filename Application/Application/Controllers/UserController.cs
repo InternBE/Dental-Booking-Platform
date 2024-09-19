@@ -18,6 +18,12 @@ namespace Application.Controllers
         {
             _userService = userService;
         }
+        [HttpGet()]
+        public async Task<IActionResult> Login(int index = 1, int pageSize = 10)
+        {
+            IList<UserResponseModel> a = await _userService.GetAll();
+            return Ok(BaseResponse<IList<UserResponseModel>>.OkResponse(a));
+        }
 
         // Lấy danh sách người dùng
         [HttpGet]
@@ -36,11 +42,13 @@ namespace Application.Controllers
                 return BadRequest(ModelState);
             }
 
-            var createdUser = await _userService.Create(userRequest); // Nhận về UserResponseModel
+        // Cập nhật thông tin người dùng
+
+            var createdUser = await _userService.Create(userRequest);
             return CreatedAtAction(nameof(Create), new { id = createdUser.Id }, BaseResponse<UserResponseModel>.OkResponse(createdUser));
         }
+        // Cập nhật thông tin User (sử dụng UserUpdateModel)
 
-        // Cập nhật thông tin người dùng
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel userModel)
         {
