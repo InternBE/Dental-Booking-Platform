@@ -1,4 +1,4 @@
-﻿using DentalBooking.Contract.Repository.Entity;
+using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.ModelViews.UserModelViews;
 using System;
 using System.Collections.Generic;
