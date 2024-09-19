@@ -1,4 +1,4 @@
-﻿using DentalBooking.Contract.Repository.Entity;
+using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.Contract.Repository;
 using DentalBooking.ModelViews.UserModelViews;
 using DentalBooking_Contract_Services.Interface;
@@ -7,50 +7,50 @@ public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-    public async Task<IList<UserResponseModel>> GetAll()
-    {
-        var userRepository = _unitOfWork.GetRepository<User>();
-        var users = await userRepository.GetAllAsync();
-
-        var userResponseModels = users.Select(user => new UserResponseModel
+        public UserService(IUnitOfWork unitOfWork)
         {
-            Id = user.Id,
-            FullName = user.FullName,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber,
-            ClinicId = user.ClinicId,
-        }).ToList();
-
-        return userResponseModels;
-    }
-    public async Task<UserResponseModel> Create(UserRequestModel userRequest)
-    {
-        // Tạo đối tượng User từ dữ liệu yêu cầu
-        var user = new User
+            _unitOfWork = unitOfWork;
+        }
+        public async Task<IList<UserResponseModel>> GetAll()
         {
-            FullName = userRequest.FullName,
-            Email = userRequest.Email,
-            PhoneNumber = userRequest.PhoneNumber,
-            ClinicId = userRequest.ClinicId,
-        };
+            var userRepository = _unitOfWork.GetRepository<User>();
+            var users = await userRepository.GetAllAsync();
 
-        // Thêm người dùng vào repository
-        await _unitOfWork.GetRepository<User>().InsertAsync(user);
-        await _unitOfWork.SaveAsync();
+            var userResponseModels = users.Select(user => new UserResponseModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ClinicId = user.ClinicId,
+            }).ToList();
 
-        // Chuyển đổi dữ liệu từ entity sang DTO (UserResponseModel)
-        return new UserResponseModel
+            return userResponseModels;
+        }
+        public async Task<UserResponseModel> Create(UserRequestModel userRequest)
         {
-            Id = user.Id,
-            FullName = user.FullName,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber
-        };
-    }
+            // Tạo đối tượng User từ dữ liệu yêu cầu
+            var user = new User
+            {
+                FullName = userRequest.FullName,
+                Email = userRequest.Email,
+                PhoneNumber = userRequest.PhoneNumber,
+                ClinicId = userRequest.ClinicId,
+            };
+
+            // Thêm người dùng vào repository
+            await _unitOfWork.GetRepository<User>().InsertAsync(user);
+            await _unitOfWork.SaveAsync();
+
+            // Chuyển đổi dữ liệu từ entity sang DTO (UserResponseModel)
+            return new UserResponseModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+        }
 
     // Các phương thức khác
     public Task<IEnumerable<User>> GetAllUsersAsync()
