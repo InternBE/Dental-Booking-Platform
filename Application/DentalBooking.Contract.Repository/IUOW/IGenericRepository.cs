@@ -26,5 +26,9 @@ namespace DentalBooking.Contract.Repository.IUOW
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
         Task InsertAsync(T obj);
+
+        // Phương thức này nhận kiểu T
+        Task DeleteAsync(T entity);
     }
+
 }
