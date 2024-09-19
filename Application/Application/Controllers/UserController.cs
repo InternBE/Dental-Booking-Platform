@@ -1,7 +1,9 @@
 ﻿using DentalBooking.Contract.Repository.Entity;
+using DentalBooking.Core.Base;
 using DentalBooking.ModelViews.UserModelViews;
 using DentalBooking_Contract_Services.Interface;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Application.Controllers
@@ -17,7 +19,28 @@ namespace Application.Controllers
             _userService = userService;
         }
 
-        // Cập nhật thông tin User (sử dụng UserUpdateModel)
+        // Lấy danh sách người dùng
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers(int index = 1, int pageSize = 10)
+        {
+            IList<UserResponseModel> users = await _userService.GetAll();
+            return Ok(BaseResponse<IList<UserResponseModel>>.OkResponse(users));
+        }
+
+        // Tạo mới người dùng
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] UserRequestModel userRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdUser = await _userService.Create(userRequest); // Nhận về UserResponseModel
+            return CreatedAtAction(nameof(Create), new { id = createdUser.Id }, BaseResponse<UserResponseModel>.OkResponse(createdUser));
+        }
+
+        // Cập nhật thông tin người dùng
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel userModel)
         {
@@ -56,7 +79,7 @@ namespace Application.Controllers
             }
         }
 
-        // Xóa User (Không cần ModelView vì chỉ sử dụng ID)
+        // Xóa người dùng
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

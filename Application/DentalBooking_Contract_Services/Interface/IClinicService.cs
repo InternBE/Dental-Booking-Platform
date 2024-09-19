@@ -1,4 +1,5 @@
 ﻿
+using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.ModelViews.ClinicModelViews;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace DentalBooking_Contract_Services.Interface
     {
         Task<ClinicModelView> GetClinicByIdAsync(int id);
         Task<ClinicModelView> CreateClinicAsync(ClinicModelView model);
+        //Task<User> CreateClinicAsync(User model);
         Task UpdateClinicAsync(int id, ClinicModelView model);
         Task DeleteClinicAsync(int id);
     }

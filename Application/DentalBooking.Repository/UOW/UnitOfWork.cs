@@ -2,6 +2,7 @@
 using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.Contract.Repository.IUOW;
 using DentalBooking.Repository.Context;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace DentalBooking.Repository
         private readonly DatabaseContext _context;
         private IGenericRepository<Clinic> _clinicRepository;
         private IUserRepository _userRepository;
+        private bool _disposed = false;
 
         public UnitOfWork(DatabaseContext context)
         {
@@ -22,7 +24,32 @@ namespace DentalBooking.Repository
             _clinicRepository ??= new GenericRepository<Clinic>(_context);
 
         public IUserRepository Users =>
-            _userRepository ??= new UserRepository(_context); // Giả sử bạn có lớp UserRepository
+            _userRepository ??= new UserRepository(_context);
+
+        public IGenericRepository<T> GetRepository<T>() where T : class
+        {
+            return new GenericRepository<T>(_context);
+        }
+
+        public void BeginTransaction()
+        {
+            _context.Database.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            _context.Database.CommitTransaction();
+        }
+
+        public void RollBack()
+        {
+            _context.Database.RollbackTransaction();
+        }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
 
         public async Task SaveAsync()
         {
@@ -33,8 +60,6 @@ namespace DentalBooking.Repository
         {
             return await _context.SaveChangesAsync();
         }
-
-        private bool _disposed = false;
 
         protected virtual void Dispose(bool disposing)
         {
