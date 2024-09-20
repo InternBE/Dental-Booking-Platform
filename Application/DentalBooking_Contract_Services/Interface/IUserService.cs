@@ -20,5 +20,6 @@ namespace DentalBooking_Contract_Services.Interface
         Task AddUserAsync(User user);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(int id);
+        Task<bool> ApproveDoctorAsync(string doctorId);
     }
 }

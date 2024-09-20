@@ -20,6 +20,7 @@ namespace DentalBooking.Repository
             _context = context;
         }
 
+        // Thay đổi kiểu trả về của ClinicRepository thành IGenericRepository<Clinic>
         public IGenericRepository<Clinic> ClinicRepository =>
             _clinicRepository ??= new GenericRepository<Clinic>(_context);
 
