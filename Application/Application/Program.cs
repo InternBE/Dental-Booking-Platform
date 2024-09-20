@@ -5,6 +5,7 @@ using DentalBooking_Contract_Services.Interface;
 using DentalBooking_Services;
 using Microsoft.EntityFrameworkCore;
 using Application.Converters;
+using DentalBooking.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new TimeOnlyConverter()); // Thêm converter
+        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
     });
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -29,7 +31,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 // Đăng ký các dịch vụ và triển khai của chúng
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
-
+// Đăng ký IClinicService
+builder.Services.AddScoped<IClinicService, ClinicService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
