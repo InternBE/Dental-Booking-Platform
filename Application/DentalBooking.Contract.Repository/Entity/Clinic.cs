@@ -18,7 +18,8 @@ namespace DentalBooking.Contract.Repository.Entity
         public int SlotDurationMinutes { get; set; }
         public int MaxPatientsPerSlot { get; set; }
         public int MaxTreatmentPerSlot { get; set; }
-        
+        public bool IsApproved { get; set; } = false;
+
         //References
         public virtual ICollection<User>? Users { get; set; }
         public virtual ICollection<Appointment>? Appointments { get; set; }

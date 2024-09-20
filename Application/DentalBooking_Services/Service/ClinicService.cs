@@ -80,5 +80,15 @@ namespace DentalBooking.Services
             _unitOfWork.ClinicRepository.Delete(clinic);
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task<bool> ApproveClinicAsync(int clinicId)
+        {
+            var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(clinicId);
+            if (clinic == null) return false;
+
+            clinic.IsApproved = true;
+            await _unitOfWork.SaveAsync();
+            return true;
+        }
     }
 }
