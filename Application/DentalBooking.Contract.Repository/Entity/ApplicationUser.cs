@@ -11,5 +11,6 @@ namespace DentalBooking.Contract.Repository.Entity
     public class ApplicationUser : IdentityUser
     {
         public bool IsApproved { get; set; } = false;
+        public string FullName { get; set; } = string.Empty;
     }
 }

@@ -9,14 +9,10 @@ public class UserService : IUserService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
-    public UserService(UserManager<ApplicationUser> userManager)
+    public UserService(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IList<UserResponseModel>> GetAll()
