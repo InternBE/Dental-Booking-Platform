@@ -19,5 +19,6 @@ namespace DentalBooking_Contract_Services.Interface
         Task DeleteClinicAsync(int id);
 
         Task<bool> ApproveClinicAsync(int clinicId);
+        Task<IEnumerable<ClinicModelView>> GetClinicsAsync(int pageNumber, int pageSize);
     }
 }

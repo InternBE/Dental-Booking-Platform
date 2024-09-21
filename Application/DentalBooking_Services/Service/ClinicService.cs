@@ -90,5 +90,23 @@ namespace DentalBooking.Services
             await _unitOfWork.SaveAsync();
             return true;
         }
+
+        public async Task<IEnumerable<ClinicModelView>> GetClinicsAsync(int pageNumber, int pageSize)
+        {
+            var clinics = _unitOfWork.ClinicRepository.GetAll() // IEnumerable không hỗ trợ ToListAsync
+                                     .Skip((pageNumber - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToList(); // Dùng ToList thay vì ToListAsync
+
+            return clinics.Select(clinic => new ClinicModelView
+            {
+                Id = clinic.Id,
+                ClinicName = clinic.ClinicName,
+                Address = clinic.Address,
+                PhoneNumber = clinic.PhoneNumber,
+            }).ToList();
+        }
+
+
     }
 }
