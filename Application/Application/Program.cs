@@ -6,6 +6,7 @@ using DentalBooking_Services;
 using Microsoft.EntityFrameworkCore;
 using Application.Converters;
 using DentalBooking.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,42 @@ builder.Services.AddControllers()
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(swagger =>
+{
+    // Thiết lập thông tin cho Swagger UI
+    swagger.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "ASP.NET 8 Web API",
+        Description = "Authentication with JWT"
+    });
+
+    // Cấu hình bảo mật JWT cho Swagger
+    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",                     // Tên trường tiêu đề
+        Type = SecuritySchemeType.ApiKey,           // Loại bảo mật là ApiKey
+        Scheme = "Bearer",                          // Loại mã bảo mật là Bearer token
+        BearerFormat = "JWT",                       // Định dạng của mã là JWT
+        In = ParameterLocation.Header               // Thêm mã này vào phần tiêu đề của yêu cầu HTTP
+    });
+
+    // Thêm yêu cầu bảo mật để tất cả các API endpoint phải được xác thực
+    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 // Cấu hình DbContext với Lazy Loading và xác định assembly cho migrations
 builder.Services.AddDbContext<DatabaseContext>(options =>
