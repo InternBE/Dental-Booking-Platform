@@ -1,15 +1,18 @@
 ﻿using DentalBooking.Contract.Repository.Entity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace DentalBooking.Repository.Context
 {
-    public class DatabaseContext : DbContext
+    // Kế thừa từ IdentityDbContext thay vì DbContext
+    public class DatabaseContext : IdentityDbContext<ApplicationUser>
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
         }
 
+        // Các DbSet cho các thực thể khác
         public DbSet<Services> Services { get; set; }
         public DbSet<Appointment_Service> Appointment_Services { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
@@ -20,12 +23,14 @@ namespace DentalBooking.Repository.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Cấu hình kiểu dữ liệu decimal cho thuộc tính Price
+            base.OnModelCreating(modelBuilder);  // Quan trọng: Gọi base.OnModelCreating để Identity hoạt động đúng
+
+            // Cấu hình khác cho các thực thể của bạn
             modelBuilder.Entity<Services>()
                 .Property(s => s.Price)
                 .HasColumnType("decimal(18, 2)");
 
-            // Cấu hình mối quan hệ giữa User và Clinic
+            // Cấu hình các mối quan hệ
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Clinic)
                 .WithMany(c => c.Users)
@@ -49,9 +54,6 @@ namespace DentalBooking.Repository.Context
                 .WithMany(tp => tp.Appointments)
                 .HasForeignKey(a => a.TreatmentPlanId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            base.OnModelCreating(modelBuilder);
         }
-
     }
 }

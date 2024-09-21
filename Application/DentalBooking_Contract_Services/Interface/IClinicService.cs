@@ -17,5 +17,8 @@ namespace DentalBooking_Contract_Services.Interface
         //Task<User> CreateClinicAsync(User model);
         Task UpdateClinicAsync(int id, ClinicModelView model);
         Task DeleteClinicAsync(int id);
+
+        Task<bool> ApproveClinicAsync(int clinicId);
+        Task<IEnumerable<ClinicModelView>> GetClinicsAsync(int pageNumber, int pageSize);
     }
 }
