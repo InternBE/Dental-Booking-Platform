@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalBooking.Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240917073017_DbInit")]
+    [Migration("20240920085729_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -152,6 +152,9 @@ namespace DentalBooking.Repository.Migrations
 
                     b.Property<DateTimeOffset?>("DeletedTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastUpdatedBy")
                         .HasColumnType("nvarchar(max)");
