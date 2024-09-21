@@ -11,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Application.Converters;
 using DentalBooking.Services;
-using DentalBooking.Contract.Repository.Entity;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,34 +23,42 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-    // Thêm cấu hình JWT Bearer
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+// Cấu hình Swagger và JWT
+builder.Services.AddSwaggerGen(swagger =>
+{
+    swagger.SwaggerDoc("v1", new OpenApiInfo
     {
-        In = ParameterLocation.Header,
-        Description = "Please enter into field the word 'Bearer' following by space and JWT",
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Version = "v1",
+        Title = "ASP.NET 8 Web API",
+        Description = "Authentication with JWT"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        new OpenApiSecurityScheme
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header
+    });
+
+    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-            Reference = new OpenApiReference
+            new OpenApiSecurityScheme
             {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        },
-        new string[] {}
-    }});
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
 });
-u
+
 // Cấu hình DbContext với Lazy Loading và xác định assembly cho migrations
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
@@ -59,10 +66,9 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
            .UseSqlServer(builder.Configuration.GetConnectionString("MyCnn"), sqlOptions =>
            {
                sqlOptions.MigrationsAssembly("DentalBooking.Repository");
-               sqlOptions.CommandTimeout(300);  // Tăng thời gian chờ lên 300 giây (5 phút)
+               sqlOptions.CommandTimeout(300);
            });
 });
-
 
 // Cấu hình ASP.NET Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -85,7 +91,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(s: builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
 
@@ -124,7 +130,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication(); // Bắt buộc phải thêm trước Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
