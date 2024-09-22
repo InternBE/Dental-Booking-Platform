@@ -83,7 +83,6 @@ namespace Application.Controllers
 
         // Đăng nhập và trả về JWT token
         [HttpPost("login")]
-        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestModel model)
         {
             if (!ModelState.IsValid)
