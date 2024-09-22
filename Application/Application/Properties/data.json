@@ -1,0 +1,104 @@
+{
+
+  "Clinics": [
+    {
+      "ClinicName": "Dental Clinic A",
+      "Address": "123 Main St",
+      "PhoneNumber": "123456789",
+      "OpeningTime": "08:00:00",
+      "ClosingTime": "17:00:00",
+      "SlotDurationMinutes": 30,
+      "MaxPatientsPerSlot": 5,
+      "MaxTreatmentPerSlot": 3,
+      "CreatedBy": null,
+      "LastUpdatedBy": null,
+      "DeletedBy": null,
+      "CreatedTime": "2024-09-16T09:00:00Z",
+      "LastUpdatedTime": "2024-09-16T09:00:00Z",
+      "DeletedTime": null
+    }
+  ],
+  "Messages": [
+    {
+      "Content": "Your appointment is confirmed.",
+      "SendDate": "2024-09-16T09:30:00Z",
+      "SenderId": 1,
+      "ReceiverId": 1,
+      "CreatedBy": null,
+      "LastUpdatedBy": null,
+      "DeletedBy": null,
+      "CreatedTime": "2024-09-16T09:00:00Z",
+      "LastUpdatedTime": "2024-09-16T09:00:00Z",
+      "DeletedTime": null
+    }
+  ],
+  "Services": [
+    {
+      "ServiceName": "Cleaning",
+      "Description": "Teeth cleaning service.",
+      "Price": 100.00,
+      "CreatedBy": null,
+      "LastUpdatedBy": null,
+      "DeletedBy": null,
+      "CreatedTime": "2024-09-16T09:00:00Z",
+      "LastUpdatedTime": "2024-09-16T09:00:00Z",
+      "DeletedTime": null
+    }
+  ],
+  "TreatmentPlans": [
+    {
+      "Description": "Regular checkup plan.",
+      "StartDate": "2024-09-16",
+      "EndDate": "2024-12-16",
+      "CustomerId": 1,
+      "CreatedBy": null,
+      "LastUpdatedBy": null,
+      "DeletedBy": null,
+      "CreatedTime": "2024-09-16T09:00:00Z",
+      "LastUpdatedTime": "2024-09-16T09:00:00Z",
+      "DeletedTime": null
+    }
+  ],
+  "Users": [
+    {
+      "FullName": "John Doe",
+      "Email": "john.doe@example.com",
+      "PhoneNumber": "987654321",
+      "ClinicId": 1,
+      "CreatedBy": null,
+      "LastUpdatedBy": null,
+      "DeletedBy": null,
+      "CreatedTime": "2024-09-16T09:00:00Z",
+      "LastUpdatedTime": "2024-09-16T09:00:00Z",
+      "DeletedTime": null
+    }
+  ],
+  "Appointments": [
+    {
+      "AppointmentDate": "2024-09-16T10:00:00Z",
+      "DentistId": 1,
+      "Status": "Scheduled",
+      "UserId": 1,
+      "ClinicId": 1,
+      "TreatmentPlanId": 1,
+      "CreatedBy": null,
+      "LastUpdatedBy": null,
+      "DeletedBy": null,
+      "CreatedTime": "2024-09-16T09:00:00Z",
+      "LastUpdatedTime": "2024-09-16T09:00:00Z",
+      "DeletedTime": null
+    }
+  ],
+  "Appointments_Services": [
+    {
+      "AppointmentId": 1,
+      "ServiceId": 1,
+      "CreatedBy": null,
+      "LastUpdatedBy": null,
+      "DeletedBy": null,
+      "CreatedTime": "2024-09-16T09:00:00Z",
+      "LastUpdatedTime": "2024-09-16T09:00:00Z",
+      "DeletedTime": null
+    }
+  ]
+}

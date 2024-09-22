@@ -12,6 +12,7 @@ using System.Text;
 using Application.Converters;
 using DentalBooking.Services;
 using Microsoft.OpenApi.Models;
+using DentalBooking.Contract.Repository.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -134,5 +135,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<DatabaseContext>();
+
+    // Xây dựng đường dẫn động cho file JSON
+    var jsonFilePath = Path.Combine(AppContext.BaseDirectory, "Properties", "data.json");
+    DataSeeder.SeedData(context, jsonFilePath); // Gọi phương thức SeedData với đường dẫn tới file JSON
+}
+
 
 app.Run();
