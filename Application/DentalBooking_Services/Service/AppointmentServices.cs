@@ -4,6 +4,7 @@ using DentalBooking.Contract.Services;
 using DentalBooking.Core.Utils;
 using DentalBooking.ModelViews.AppointmentModelViews;
 using DentalBooking_Contract_Services.Interface;
+using Hangfire;
 
 namespace DentalBooking_Services.Service
 {
@@ -121,7 +122,78 @@ namespace DentalBooking_Services.Service
             await _unitOfWork.SaveAsync(); // Lưu thay đổi
             return true;
         }
+        //Đăng ký lịch khám 1 lần
+        public async Task<AppointmentResponeModelViews> BookOneTimeAppointmentAsync(AppointmentRequestModelView model)
+        {
+            var appointmentEntity = new Appointment
+            {
+                UserId = model.UserId,
+                ClinicId = model.ClinicId,
+                TreatmentPlanId = model.TreatmentPlanId,
+                AppointmentDate = model.AppointmentDate,
+                Status = model.Status
+            };
 
+            var repository = _unitOfWork.GetRepository<Appointment>();
+            await repository.InsertAsync(appointmentEntity);
+            await _unitOfWork.SaveAsync();
+
+            
+            ScheduleReminder(appointmentEntity);
+
+            return new AppointmentResponeModelViews
+            {
+                AppointmentDate = appointmentEntity.AppointmentDate,
+                Status = appointmentEntity.Status,
+                UserId = appointmentEntity.UserId,
+                ClinicId = appointmentEntity.ClinicId,
+                TreatmentPlanId = appointmentEntity.TreatmentPlanId
+            };
+        }
+
+        // Đặt lịch nhắc nhở 1 ngày trước ngày hạn
+        private void ScheduleReminder(Appointment appointmentEntity)
+        {
+            var reminderDate = appointmentEntity.AppointmentDate.AddDays(-1);
+            //Sử dụng Hangfire.Core để tạo một bộ lập lịch công việc nền
+            BackgroundJob.Schedule(() => SendReminder(appointmentEntity.UserId, appointmentEntity.AppointmentDate), reminderDate);
+        }
+
+        private void SendReminder(int userId, DateTime appointmentDate)
+        {
+           
+        }
+        //Điều trị định kỳ
+        public async Task<List<AppointmentResponeModelViews>> BookPeriodicAppointmentsAsync(AppointmentRequestModelView model, int months)
+        {
+            var repository = _unitOfWork.GetRepository<Appointment>();
+            var responseAppointments = new List<AppointmentResponeModelViews>();
+
+            for (int i = 0; i < months; i++)
+            {
+                var appointmentEntity = new Appointment
+                {
+                    UserId = model.UserId,
+                    ClinicId = model.ClinicId,
+                    TreatmentPlanId = model.TreatmentPlanId,
+                    AppointmentDate = model.AppointmentDate.AddMonths(i),
+                    Status = model.Status
+                };
+
+                await repository.InsertAsync(appointmentEntity);
+                responseAppointments.Add(new AppointmentResponeModelViews
+                {
+                    AppointmentDate = appointmentEntity.AppointmentDate,
+                    Status = appointmentEntity.Status,
+                    UserId = appointmentEntity.UserId,
+                    ClinicId = appointmentEntity.ClinicId,
+                    TreatmentPlanId = appointmentEntity.TreatmentPlanId
+                });
+            }
+
+            await _unitOfWork.SaveAsync();
+            return responseAppointments;
+        }
 
     }
 }

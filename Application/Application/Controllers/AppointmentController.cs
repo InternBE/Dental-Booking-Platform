@@ -1,5 +1,6 @@
 ﻿using DentalBooking.ModelViews.AppointmentModelViews;
 using DentalBooking_Contract_Services.Interface;
+using DentalBooking_Services.Service;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -98,5 +99,18 @@ namespace Application.Controllers
 
             return NoContent();
         }
+        // POST: api/Appointment/BookOneTime
+        [HttpPost("BookOneTime")]
+        public async Task<IActionResult> BookOneTimeAppointment([FromBody] AppointmentRequestModelView model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdAppointment = await _appointmentServices.BookOneTimeAppointmentAsync(model);
+            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.AppointmentDate }, createdAppointment);
+        }
+
     }
 }
