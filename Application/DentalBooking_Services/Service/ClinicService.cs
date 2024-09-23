@@ -104,6 +104,11 @@ namespace DentalBooking.Services
                 ClinicName = clinic.ClinicName,
                 Address = clinic.Address,
                 PhoneNumber = clinic.PhoneNumber,
+                OpeningTime = clinic.OpeningTime,
+                ClosingTime = clinic.ClosingTime,
+                SlotDurationMinutes = clinic.SlotDurationMinutes,
+                MaxPatientsPerSlot = clinic.MaxPatientsPerSlot,
+                MaxTreatmentPerSlot = clinic.MaxTreatmentPerSlot
             }).ToList();
         }
 
