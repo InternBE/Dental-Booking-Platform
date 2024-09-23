@@ -13,6 +13,8 @@ using Application.Converters;
 using DentalBooking.Services;
 using Microsoft.OpenApi.Models;
 using DentalBooking.Contract.Repository.Entity;
+using DentalBooking_Services.Service;
+using DentalBooking.Contract.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,6 +107,10 @@ builder.Services.AddScoped<IClinicService, ClinicService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
+builder.Services.AddScoped<ITreatmentService, TreatmentPlanService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentServices>();
+builder.Services.AddScoped<IServiceServices, ServiceServices>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 // Build app
 var app = builder.Build();
 
