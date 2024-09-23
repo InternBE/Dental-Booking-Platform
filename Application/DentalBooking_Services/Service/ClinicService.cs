@@ -29,7 +29,8 @@ namespace DentalBooking.Services
                 ClosingTime = clinic.ClosingTime,
                 SlotDurationMinutes = clinic.SlotDurationMinutes,
                 MaxPatientsPerSlot = clinic.MaxPatientsPerSlot,
-                MaxTreatmentPerSlot = clinic.MaxTreatmentPerSlot
+                MaxTreatmentPerSlot = clinic.MaxTreatmentPerSlot,
+                IsApproved = clinic.IsApproved
             };
         }
 
@@ -44,7 +45,9 @@ namespace DentalBooking.Services
                 ClosingTime = model.ClosingTime,
                 SlotDurationMinutes = model.SlotDurationMinutes,
                 MaxPatientsPerSlot = model.MaxPatientsPerSlot,
-                MaxTreatmentPerSlot = model.MaxTreatmentPerSlot
+                MaxTreatmentPerSlot = model.MaxTreatmentPerSlot,
+                IsApproved = model.IsApproved
+
             };
 
             await _unitOfWork.ClinicRepository.AddAsync(clinic);
@@ -67,6 +70,7 @@ namespace DentalBooking.Services
             clinic.SlotDurationMinutes = model.SlotDurationMinutes;
             clinic.MaxPatientsPerSlot = model.MaxPatientsPerSlot;
             clinic.MaxTreatmentPerSlot = model.MaxTreatmentPerSlot;
+            clinic.IsApproved = model.IsApproved;
 
             _unitOfWork.ClinicRepository.Update(clinic);
             await _unitOfWork.SaveAsync();
@@ -108,7 +112,8 @@ namespace DentalBooking.Services
                 ClosingTime = clinic.ClosingTime,
                 SlotDurationMinutes = clinic.SlotDurationMinutes,
                 MaxPatientsPerSlot = clinic.MaxPatientsPerSlot,
-                MaxTreatmentPerSlot = clinic.MaxTreatmentPerSlot
+                MaxTreatmentPerSlot = clinic.MaxTreatmentPerSlot,
+                IsApproved = clinic.IsApproved
             }).ToList();
         }
 

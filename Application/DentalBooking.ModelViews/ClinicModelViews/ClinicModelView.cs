@@ -17,5 +17,6 @@ namespace DentalBooking.ModelViews.ClinicModelViews
         public int SlotDurationMinutes { get; set; }
         public int MaxPatientsPerSlot { get; set; }
         public int MaxTreatmentPerSlot { get; set; }
+        public bool IsApproved { get; set; }
     }
 }
