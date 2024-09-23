@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalBooking.Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240922124453_case1")]
-    partial class case1
+    [Migration("20240923011602_DbInit")]
+    partial class DbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

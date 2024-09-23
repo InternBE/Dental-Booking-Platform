@@ -36,7 +36,7 @@ namespace Application.Controllers
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClinic(int id, ClinicModelView model)
-    {
+        {
             await _clinicService.UpdateClinicAsync(id, model);
             return NoContent();
         }
