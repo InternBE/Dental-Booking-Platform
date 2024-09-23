@@ -111,6 +111,7 @@ builder.Services.AddScoped<ITreatmentService, TreatmentPlanService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentServices>();
 builder.Services.AddScoped<IServiceServices, ServiceServices>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 // Build app
 var app = builder.Build();
 
