@@ -1,4 +1,5 @@
-﻿using DentalBooking.ModelViews.AppointmentModelViews;
+﻿using Azure;
+using DentalBooking.ModelViews.AppointmentModelViews;
 using DentalBooking_Contract_Services.Interface;
 using DentalBooking_Services.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,18 @@ namespace Application.Controllers
 
             return Ok(response);
         }
+        // GET: api/Appointment/{id}
+        [HttpGet("{UserId}")]
+        public async Task<IActionResult> AllAppointmentByUserId(int UserId)
+        {
+            var response = await _appointmentServices.AllAppointmentsByUserIdAsync(UserId);
+            if (response == null)
+            {
+                return NotFound();
+            }
 
+            return Ok(response);
+        }
         // POST: api/Appointment
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequestModelView model)

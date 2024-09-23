@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,11 @@ namespace DentalBooking.Contract.Repository.Entity
     public class ApplicationUser : IdentityUser
     {
         public bool IsApproved { get; set; } = false;
-        public string FullName { get; set; } = string.Empty;
+
+
+        public int UserId { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public virtual User? User { get; set; }
+
     }
 }

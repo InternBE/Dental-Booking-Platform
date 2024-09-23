@@ -194,6 +194,25 @@ namespace DentalBooking_Services.Service
             await _unitOfWork.SaveAsync();
             return responseAppointments;
         }
+        
+        public async Task<IEnumerable<AppointmentResponeModelViews>> AllAppointmentsByUserIdAsync(int UserId)
+        {
+            var repository = _unitOfWork.GetRepository<Appointment>();
 
+            // Chờ để nhận danh sách các cuộc hẹn
+            IEnumerable<Appointment> lAppointment = await repository.FindAsync(x => x.UserId == UserId);
+
+            return lAppointment.Select(appointment => new AppointmentResponeModelViews {
+                AppointmentDate = appointment.AppointmentDate,
+                Status = appointment.Status,
+                UserId = appointment.UserId,
+                ClinicId = appointment.ClinicId,
+                TreatmentPlanId = appointment.TreatmentPlanId
+            }
+            );
+           
+
+            
+        }
     }
 }
