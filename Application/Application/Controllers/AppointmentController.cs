@@ -1,8 +1,10 @@
 ﻿using Azure;
+using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.ModelViews.AppointmentModelViews;
 using DentalBooking_Contract_Services.Interface;
 using DentalBooking_Services.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace Application.Controllers
@@ -57,16 +59,26 @@ namespace Application.Controllers
             return Ok(response);
         }
         // GET: api/Appointment/{id}
-        [HttpGet("{UserId}")]
-        public async Task<IActionResult> AllAppointmentByUserId(int UserId)
+        [HttpGet("AllAppointmentByUserId")]
+        public async Task<IActionResult> AllAppointmentByUserId([FromQuery] int UserId)
         {
             var response = await _appointmentServices.AllAppointmentsByUserIdAsync(UserId);
-            if (response == null)
+            if (response.IsNullOrEmpty())
             {
-                return NotFound();
+                return NotFound(new { message = "Dont have appointment" });
             }
 
             return Ok(response);
+        }
+        [HttpGet("AlertDayAfter")]
+        public async Task<IActionResult> Alert([FromQuery] int UserId, [FromQuery] bool isAlert = true)
+        {
+            var AppointmenDayAfter = _appointmentServices.AlertAppointmentDayAfter(UserId, isAlert);
+            if(AppointmenDayAfter == null)
+            {
+                return NotFound(new {message = "Dont have Appointment Tomorrow"});
+            }
+            return Ok(AppointmenDayAfter);
         }
         // POST: api/Appointment
         [HttpPost("Create")]
