@@ -122,6 +122,95 @@ namespace DentalBooking_Services.Service
             return true;
         }
 
+        public async Task<DateTime?> SuggestNextAppointment(int userId, int treatmentPlanId)
+        {
+            // Lấy kế hoạch điều trị
+            var treatmentPlanRepository = _unitOfWork.GetRepository<TreatmentPlans>();
+            var treatmentPlan = await treatmentPlanRepository.GetByIdAsync(treatmentPlanId);
+
+            if (treatmentPlan == null || treatmentPlan.EndDate.ToDateTime(TimeOnly.MinValue) < DateTime.Now)
+            {
+                // Kế hoạch điều trị không tồn tại hoặc đã kết thúc
+                return null;
+            }
+
+            // Lấy tất cả các cuộc hẹn và sau đó lọc các cuộc hẹn liên quan đến bệnh nhân và kế hoạch điều trị
+            var appointmentRepository = _unitOfWork.GetRepository<Appointment>();
+            var allAppointments = await appointmentRepository.GetAllAsync(); // Lấy tất cả cuộc hẹn
+
+            // Lọc cuộc hẹn của bệnh nhân theo kế hoạch điều trị và sắp xếp theo ngày gần nhất
+            var lastAppointment = allAppointments
+                .Where(a => a.UserId == userId && a.TreatmentPlanId == treatmentPlanId && a.DeletedTime == null)
+                .OrderByDescending(a => a.AppointmentDate)
+                .FirstOrDefault();
+
+            // Tính toán ngày tái khám tiếp theo
+            DateTime nextAppointmentDate;
+
+            if (lastAppointment == null)
+            {
+                // Nếu không có cuộc hẹn trước đó, lấy StartDate của kế hoạch điều trị
+                nextAppointmentDate = treatmentPlan.StartDate.ToDateTime(TimeOnly.MinValue);
+            }
+            else
+            {
+                // Nếu đã có cuộc hẹn, sử dụng ngày gần nhất và thêm khoảng tái khám định kỳ
+                TimeSpan recurrencePeriod = TimeSpan.FromDays(30);
+                nextAppointmentDate = lastAppointment.AppointmentDate.Add(recurrencePeriod);
+            }
+
+            // Kiểm tra nếu ngày tái khám tiếp theo vượt quá EndDate của kế hoạch điều trị
+            if (nextAppointmentDate > treatmentPlan.EndDate.ToDateTime(TimeOnly.MinValue))
+            {
+                return null; // Không đề xuất tái khám nếu vượt quá ngày kết thúc điều trị
+            }
+
+            // Kiểm tra trùng thời gian với các cuộc hẹn khác của bệnh nhân
+            bool isConflict;
+            int maxRetries = 10; // Giới hạn số lần thử để tìm một khoảng thời gian không trùng
+
+            do
+            {
+                isConflict = await CheckAppointmentConflict(userId, nextAppointmentDate);
+
+                if (isConflict)
+                {
+                    // Nếu có trùng lặp, thêm một khoảng thời gian (ví dụ: 30 phút)
+                    nextAppointmentDate = nextAppointmentDate.AddMinutes(30);
+                }
+
+                maxRetries--;
+
+                // Kiểm tra nếu thời gian mới vượt quá EndDate
+                if (nextAppointmentDate > treatmentPlan.EndDate.ToDateTime(TimeOnly.MinValue))
+                {
+                    return null; // Không có thời gian phù hợp trong khoảng thời gian của kế hoạch điều trị
+                }
+
+            } while (isConflict && maxRetries > 0);
+
+            return nextAppointmentDate;
+        }
+
+        private async Task<bool> CheckAppointmentConflict(int userId, DateTime proposedDate)
+        {
+            var appointmentRepository = _unitOfWork.GetRepository<Appointment>();
+
+            // Lấy tất cả các cuộc hẹn
+            var allAppointments = await appointmentRepository.GetAllAsync();
+
+            // Kiểm tra nếu có cuộc hẹn nào trùng lặp
+            var conflictingAppointments = allAppointments
+                .Where(a => a.UserId == userId
+                    && a.AppointmentDate.Date == proposedDate.Date // Kiểm tra cùng ngày
+                    && a.AppointmentDate.TimeOfDay == proposedDate.TimeOfDay // Kiểm tra cùng giờ
+                    && a.DeletedTime == null) // Bỏ qua những cuộc hẹn đã bị xóa
+                .ToList();
+
+            return conflictingAppointments.Any(); // Trả về true nếu có cuộc hẹn trùng
+        }
+
+
 
     }
 }

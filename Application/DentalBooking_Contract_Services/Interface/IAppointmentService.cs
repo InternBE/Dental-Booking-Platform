@@ -10,5 +10,7 @@ namespace DentalBooking_Contract_Services.Interface
         Task<AppointmentResponeModelViews> CreateAppointmentAsync(AppointmentRequestModelView model);
         Task<bool> UpdateAppointmentAsync(int id, AppointmentRequestModelView model);
         Task<bool> DeleteAppointmentAsync(int id);
+
+        Task<DateTime?> SuggestNextAppointment(int userId, int treatmentPlanId);
     }
 }
