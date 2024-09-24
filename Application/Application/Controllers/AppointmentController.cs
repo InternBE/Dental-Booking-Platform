@@ -1,6 +1,10 @@
-﻿using DentalBooking.ModelViews.AppointmentModelViews;
+﻿using Azure;
+using DentalBooking.Contract.Repository.Entity;
+using DentalBooking.ModelViews.AppointmentModelViews;
 using DentalBooking_Contract_Services.Interface;
+using DentalBooking_Services.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace Application.Controllers
@@ -54,7 +58,28 @@ namespace Application.Controllers
 
             return Ok(response);
         }
+        // GET: api/Appointment/{id}
+        [HttpGet("AllAppointmentByUserId")]
+        public async Task<IActionResult> AllAppointmentByUserId([FromQuery] int UserId)
+        {
+            var response = await _appointmentServices.AllAppointmentsByUserIdAsync(UserId);
+            if (response.IsNullOrEmpty())
+            {
+                return NotFound(new { message = "Dont have appointment" });
+            }
 
+            return Ok(response);
+        }
+        [HttpGet("AlertDayAfter")]
+        public async Task<IActionResult> Alert([FromQuery] int UserId, [FromQuery] bool isAlert = true)
+        {
+            var AppointmenDayAfter = _appointmentServices.AlertAppointmentDayAfter(UserId, isAlert);
+            if(AppointmenDayAfter == null)
+            {
+                return NotFound(new {message = "Dont have Appointment Tomorrow"});
+            }
+            return Ok(AppointmenDayAfter);
+        }
         // POST: api/Appointment
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequestModelView model)
@@ -97,6 +122,31 @@ namespace Application.Controllers
             }
 
             return NoContent();
+        }
+        // POST: api/Appointment/BookOneTime
+        [HttpPost("BookOneTime")]
+        public async Task<IActionResult> BookOneTimeAppointment([FromBody] AppointmentRequestModelView model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdAppointment = await _appointmentServices.BookOneTimeAppointmentAsync(model);
+            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.AppointmentDate }, createdAppointment);
+        }
+        // POST: api/Appointment/BookPeriodic
+        [HttpPost("BookPeriodic")]
+        public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Đăng ký 12 cuộc hẹn
+            var response = await _appointmentServices.BookPeriodicAppointmentsAsync(model, 12);
+            return Ok(response);
         }
     }
 }

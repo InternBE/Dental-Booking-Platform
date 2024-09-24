@@ -13,6 +13,8 @@ using Application.Converters;
 using DentalBooking.Services;
 using Microsoft.OpenApi.Models;
 using DentalBooking.Contract.Repository.Entity;
+using DentalBooking_Services.Service;
+using DentalBooking.Contract.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,11 +39,12 @@ builder.Services.AddSwaggerGen(swagger =>
 
     swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
+        Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
-        In = ParameterLocation.Header
+        Scheme = "Bearer"
     });
 
     swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -81,18 +84,21 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
+    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = false,
+        ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+
     };
 });
 
@@ -105,6 +111,11 @@ builder.Services.AddScoped<IClinicService, ClinicService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
+builder.Services.AddScoped<ITreatmentService, TreatmentPlanService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentServices>();
+builder.Services.AddScoped<IServiceServices, ServiceServices>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 // Build app
 var app = builder.Build();
 
@@ -135,16 +146,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<DatabaseContext>();
-
-    // Xây dựng đường dẫn động cho file JSON
-    var jsonFilePath = Path.Combine(AppContext.BaseDirectory, "Properties", "data.json");
-    DataSeeder.SeedData(context, jsonFilePath); // Gọi phương thức SeedData với đường dẫn tới file JSON
-}
 
 
 app.Run();
