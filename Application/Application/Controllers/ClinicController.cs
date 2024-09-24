@@ -29,7 +29,7 @@ namespace Application.Controllers
             var clinic = await _clinicService.GetClinicByIdAsync(id);
             if (clinic == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "Phòng khám không được tìm thấy." });
             }
             return Ok(clinic);
         }
@@ -37,16 +37,31 @@ namespace Application.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClinic(int id, ClinicModelView model)
         {
+            // Chỉ cần gọi phương thức mà không cần gán kết quả
+            var clinicExists = await _clinicService.GetClinicByIdAsync(id);
+            if (clinicExists == null)
+            {
+                return NotFound(new { Message = "Phòng khám không tồn tại." });
+            }
+
             await _clinicService.UpdateClinicAsync(id, model);
-            return NoContent();
+            return Ok(new { Message = "Phòng khám đã được cập nhật thành công." });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClinic(int id)
         {
+            // Tương tự, không cần gán kết quả nếu phương thức trả về void
+            var clinicExists = await _clinicService.GetClinicByIdAsync(id);
+            if (clinicExists == null)
+            {
+                return NotFound(new { Message = "Phòng khám không tồn tại." });
+            }
+
             await _clinicService.DeleteClinicAsync(id);
-            return NoContent();
+            return Ok(new { Message = "Phòng khám đã được xóa thành công." });
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllClinics(int index = 1, int pageSize = 10)

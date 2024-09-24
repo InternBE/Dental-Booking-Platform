@@ -107,6 +107,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IClinicService, ClinicService>();
 
+//builder.Services.AddScoped<IDentistService, DentistService>();
+
 // Đăng ký UserManager và SignInManager cho ASP.NET Identity
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<SignInManager<ApplicationUser>>();
@@ -122,8 +124,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    string[] roleNames = { "Admin", "Customer", "Dentist" };
+    string[] roleNames = { "ADMIN", "CUSTOMER", "DENTIST" };
+    //string[] roleNames = { "Admin", "Customer", "Dentist" };
     foreach (var roleName in roleNames)
     {
         var roleExist = await roleManager.RoleExistsAsync(roleName);

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalBooking.Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240923172000_DbInit")]
+    [Migration("20240924030220_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -47,10 +47,6 @@ namespace DentalBooking.Repository.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
@@ -83,6 +79,9 @@ namespace DentalBooking.Repository.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -96,6 +95,8 @@ namespace DentalBooking.Repository.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -571,6 +572,17 @@ namespace DentalBooking.Repository.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.ApplicationUser", b =>
+                {
+                    b.HasOne("DentalBooking.Contract.Repository.Entity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DentalBooking.Contract.Repository.Entity.Appointment", b =>

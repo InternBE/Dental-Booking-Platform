@@ -35,7 +35,7 @@ namespace Application.Controllers
         }
 
         // Lấy danh sách tất cả người dùng (Chỉ Admin mới có quyền truy cập)
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -44,7 +44,8 @@ namespace Application.Controllers
         }
 
         // Lấy thông tin người dùng theo ID
-        [Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
+        //[Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -103,7 +104,7 @@ namespace Application.Controllers
                     Token = token,
                     Expiration = DateTime.UtcNow.AddHours(1), // Token hết hạn sau 1 giờ
                     Role = roles.FirstOrDefault(),
-                    UserId = user.UserId // Trả về ID người dùng
+                    UserId = user.Id // Trả về ID người dùng
                 });
             }
 
