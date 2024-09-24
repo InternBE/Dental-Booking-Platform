@@ -52,7 +52,7 @@ namespace Application.Controllers
         public async Task<IActionResult> GetAllClinics(int index = 1, int pageSize = 10)
         {
             var clinics = await _clinicService.GetClinicsAsync(index, pageSize);
-            return Ok(clinics); // Trả về danh sách phòng khám mà không bọc vào BaseResponse
+            return Ok(clinics);
         }
 
     }
