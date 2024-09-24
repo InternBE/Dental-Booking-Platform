@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalBooking.Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240923011602_DbInit")]
+    [Migration("20240923172000_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
