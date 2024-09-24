@@ -35,7 +35,7 @@ namespace Application.Controllers
         }
 
         // Lấy danh sách tất cả người dùng (Chỉ Admin mới có quyền truy cập)
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -44,7 +44,7 @@ namespace Application.Controllers
         }
 
         // Lấy thông tin người dùng theo ID
-        [Authorize(Roles = "Admin,Customer,Dentist")]
+        [Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -65,16 +65,20 @@ namespace Application.Controllers
 
         // Đăng ký người dùng mới
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRequestModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            UserRequestModel requestModel = new UserRequestModel() {Email= model.Email,ClinicId = model.ClinicId };
 
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FullName = model.FullName };
+            var userrespone = await _userService.Create(requestModel);
+
+
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email, UserId = userrespone.Id};
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, model.Role);
+                await _userManager.AddToRoleAsync(user,"ADMIN");
                 return Ok(new { message = "User registered successfully" });
             }
 
@@ -99,7 +103,7 @@ namespace Application.Controllers
                     Token = token,
                     Expiration = DateTime.UtcNow.AddHours(1), // Token hết hạn sau 1 giờ
                     Role = roles.FirstOrDefault(),
-                    UserId = user.Id // Trả về ID người dùng
+                    UserId = user.UserId // Trả về ID người dùng
                 });
             }
 

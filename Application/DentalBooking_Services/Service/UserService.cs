@@ -3,16 +3,21 @@ using DentalBooking.Contract.Repository;
 using DentalBooking.ModelViews.UserModelViews;
 using DentalBooking_Contract_Services.Interface;
 using Microsoft.AspNetCore.Identity;
+using DentalBooking.Repository.Context;
+using Microsoft.EntityFrameworkCore;
+
 
 public class UserService : IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly DatabaseContext _dbContext;
 
-    public UserService(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
+    public UserService(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, DatabaseContext dbContext)
     {
         _userManager = userManager;
         _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<IList<UserResponseModel>> GetAll()
@@ -34,7 +39,6 @@ public class UserService : IUserService
 
     public async Task<UserResponseModel> Create(UserRequestModel userRequest)
     {
-        // Tạo đối tượng User từ dữ liệu yêu cầu
         var user = new User
         {
             FullName = userRequest.FullName,
@@ -43,11 +47,9 @@ public class UserService : IUserService
             ClinicId = userRequest.ClinicId,
         };
 
-        // Thêm người dùng vào repository
         await _unitOfWork.GetRepository<User>().InsertAsync(user);
         await _unitOfWork.SaveAsync();
 
-        // Chuyển đổi dữ liệu từ entity sang DTO (UserResponseModel)
         return new UserResponseModel
         {
             Id = user.Id,
@@ -63,9 +65,17 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
-    public Task<User> GetUserByIdAsync(int id)
+    public async Task<User> GetUserByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var user = await _dbContext.Users.FindAsync(id);
+
+        // Kiểm tra nếu người dùng không tồn tại
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found");
+        }
+
+        return user;
     }
 
     public Task AddUserAsync(User user)
@@ -73,14 +83,34 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
-    public Task UpdateUserAsync(User user)
+    public async Task UpdateUserAsync(User user)
     {
-        throw new NotImplementedException();
+        var existingUser = await _dbContext.Users.FindAsync(user.Id);
+
+        if (existingUser == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+
+        existingUser.FullName = user.FullName;
+        existingUser.Email = user.Email;
+        existingUser.PhoneNumber = user.PhoneNumber;
+        existingUser.ClinicId = user.ClinicId;
+
+        await _dbContext.SaveChangesAsync();
     }
 
-    public Task DeleteUserAsync(int id)
+    public async Task DeleteUserAsync(int id)
     {
-        throw new NotImplementedException();
+        var user = await _dbContext.Users.FindAsync(id);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+
+        _dbContext.Users.Remove(user);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<bool> ApproveDoctorAsync(string doctorId)
