@@ -5,6 +5,7 @@ using DentalBooking.Core.Utils;
 using DentalBooking.ModelViews.AppointmentModelViews;
 using DentalBooking_Contract_Services.Interface;
 using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DentalBooking_Services.Service
@@ -170,14 +171,28 @@ namespace DentalBooking_Services.Service
             var repository = _unitOfWork.GetRepository<Appointment>();
             var responseAppointments = new List<AppointmentResponeModelViews>();
 
+            // Lấy danh sách tất cả cuộc hẹn của nha sĩ trong khoảng thời gian cần kiểm tra
+            var dentistAppointments = await repository.Entities
+                .Where(a => a.ClinicId == model.ClinicId && a.AppointmentDate >= model.AppointmentDate)
+                .ToListAsync();
+
             for (int i = 0; i < months; i++)
             {
+                var appointmentDate = model.AppointmentDate.AddMonths(i);
+
+                // Kiểm tra nếu nha sĩ có lịch trùng
+                if (dentistAppointments.Any(a => a.AppointmentDate.Date == appointmentDate.Date))
+                {
+                    throw new InvalidOperationException($"Nha sĩ đã có lịch hẹn vào ngày {appointmentDate.ToShortDateString()}");
+                }
+
+                // Tạo và lưu cuộc hẹn mới
                 var appointmentEntity = new Appointment
                 {
                     UserId = model.UserId,
                     ClinicId = model.ClinicId,
                     TreatmentPlanId = model.TreatmentPlanId,
-                    AppointmentDate = model.AppointmentDate.AddMonths(i),
+                    AppointmentDate = appointmentDate,
                     Status = model.Status
                 };
 
@@ -195,7 +210,7 @@ namespace DentalBooking_Services.Service
             await _unitOfWork.SaveAsync();
             return responseAppointments;
         }
-        
+
         public async Task<IEnumerable<AppointmentResponeModelViews>> AllAppointmentsByUserIdAsync(int UserId)
         {
             var repository = _unitOfWork.GetRepository<Appointment>();
