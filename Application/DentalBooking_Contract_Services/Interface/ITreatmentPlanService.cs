@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 
 namespace DentalBooking_Contract_Services.Interface
 {
-    public interface ITreatmentService
+    public interface ITreatmentPlanService
     {
-        // Lấy tất cả cuộc hẹn
-        Task<IEnumerable<TreatmentPlanResponseModelView>> GetAllAppointmentsAsync();
-        // Lấy chi tiết cuộc hẹn theo ID
-        Task<TreatmentPlanResponseModelView> GetAppointmentDetailsAsync(int appointmentId);
+        Task<IEnumerable<TreatmentPlanResponseModelView>> GetAllTreatmentPlansAsync();
 
-        // Lấy kế hoạch điều trị theo mã khách hàng
-        Task<TreatmentPlanResponseModelView> GetTreatmentPlanAsync(int customerId);
+        // Lấy chi tiết kế hoạch điều trị theo ID
+        Task<TreatmentPlanResponseModelView> GetTreatmentPlanDetailsAsync(int treatmentPlanId);
+
+        // Lấy tất cả kế hoạch điều trị của khách hàng
+        Task<IEnumerable<TreatmentPlanResponseModelView>> GetAllTreatmentPlansForCustomerAsync(int customerId);
 
         // Cập nhật kế hoạch điều trị
         Task<bool> UpdateTreatmentPlanAsync(int treatmentId, TreatmentPlanRequestModelView treatmentRequestModel);
