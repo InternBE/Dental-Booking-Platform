@@ -111,7 +111,7 @@ builder.Services.AddScoped<IClinicService, ClinicService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
-builder.Services.AddScoped<ITreatmentService, TreatmentPlanService>();
+builder.Services.AddScoped<ITreatmentPlanService, TreatmentPlanService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentServices>();
 builder.Services.AddScoped<IServiceServices, ServiceServices>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
