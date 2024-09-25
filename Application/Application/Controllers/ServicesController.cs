@@ -30,7 +30,7 @@ namespace DentalBooking.API.Controllers
             var service = await _serviceServices.GetServiceByIdAsync(id);
             if (service == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Dịch vụ với ID {id} không tồn tại." });
             }
             return Ok(service);
         }
@@ -60,10 +60,10 @@ namespace DentalBooking.API.Controllers
             var result = await _serviceServices.UpdateServiceAsync(id, model);
             if (!result)
             {
-                return NotFound();
+                return BadRequest(new { message = "Sửa dịch vụ không thành công do lỗi hệ thống." });
             }
 
-            return NoContent();
+            return Ok(new { message = $"Dịch vụ với ID {id} đã được sửa thành công." });
         }
 
         // DELETE: api/Service/{id}
@@ -73,10 +73,10 @@ namespace DentalBooking.API.Controllers
             var result = await _serviceServices.DeleteServiceAsync(id);
             if (!result)
             {
-                return NotFound();
+                return BadRequest(new { message = "Xóa dịch vụ không thành công do lỗi hệ thống." });
             }
 
-            return NoContent();
+            return Ok(new { message = $"Dịch vụ với ID {id} đã được xóa thành công." });
         }
     }
 }

@@ -11,20 +11,20 @@ namespace DentalBooking.Controllers
     [ApiController]
     public class TreatmentPlanController : ControllerBase
     {
-        private readonly ITreatmentService _treatmentService;
+        private readonly ITreatmentPlanService _treatmentService;
 
-        public TreatmentPlanController(ITreatmentService treatmentService)
+        public TreatmentPlanController(ITreatmentPlanService treatmentService)
         {
             _treatmentService = treatmentService;
         }
 
         // Lấy tất cả cuộc hẹn
-        [HttpGet("appointments")]
+        [HttpGet]
         public async Task<IActionResult> GetAllAppointments()
         {
             try
             {
-                var appointments = await _treatmentService.GetAllAppointmentsAsync();
+                var appointments = await _treatmentService.GetAllTreatmentPlansAsync();
                 return Ok(appointments);
             }
             catch (Exception ex)
@@ -35,23 +35,29 @@ namespace DentalBooking.Controllers
         }
 
         // GET: api/TreatmentPlan/{customerId}
-        [HttpGet("{customerId}")]
+        [HttpGet("GetAll/{customerId}")]
         public async Task<IActionResult> GetTreatmentPlan(int customerId)
         {
             try
-            {
-                var treatmentPlan = await _treatmentService.GetTreatmentPlanAsync(customerId);
-                return Ok(treatmentPlan);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                throw new BaseException.BadRequestException("not_found", ex.Message);
-            }
-            catch (Exception ex)
-            {
-                throw new BaseException.CoreException("server_error", ex.Message);
-            }
+    {
+        // Lấy danh sách kế hoạch điều trị của khách hàng
+        var treatmentPlans = await _treatmentService.GetAllTreatmentPlansForCustomerAsync(customerId);
+        
+        // Kiểm tra nếu không có kế hoạch điều trị nào
+        if (treatmentPlans == null || !treatmentPlans.Any())
+        {
+            return NotFound(new { Code = "not_found", Message = "Không tìm thấy kế hoạch điều trị cho khách hàng." });
         }
+
+        return Ok(treatmentPlans); // Trả về danh sách kế hoạch điều trị nếu tìm thấy
+    }
+    catch (Exception ex)
+    {
+        // Trả về lỗi server thay vì throw exception
+        return StatusCode(500, new { Code = "server_error", Message = ex.Message });
+    }
+        }
+
 
         // Gửi kế hoạch điều trị cho khách hàng
         [HttpPost("send-treatment-plan/{customerId}/{doctorId}")]
@@ -73,7 +79,7 @@ namespace DentalBooking.Controllers
         }
 
         // POST: api/TreatmentPlan
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateTreatmentPlan([FromBody] TreatmentPlanRequestModelView treatmentPlanRequest)
         {
             if (!ModelState.IsValid)
@@ -96,9 +102,29 @@ namespace DentalBooking.Controllers
 
             return BadRequest("Không thể tạo kế hoạch điều trị.");
         }
+        // GET: api/TreatmentPlan/Detail/{treatmentPlanId}
+        [HttpGet("Detail/{treatmentPlanId}")]
+        public async Task<IActionResult> GetTreatmentPlanDetail(int treatmentPlanId)
+        {
+            try
+            {
+                var treatmentPlan = await _treatmentService.GetTreatmentPlanDetailsAsync(treatmentPlanId);
 
+                if (treatmentPlan == null)
+                {
+                    return NotFound(new { Code = "not_found", Message = "Kế hoạch điều trị không tồn tại." });
+                }
+
+                return Ok(treatmentPlan);
+            }
+            catch (Exception ex)
+            {
+                // Trả về lỗi server thay vì throw exception
+                return StatusCode(500, new { Code = "server_error", Message = ex.Message });
+            }
+        }
         // PUT: api/TreatmentPlan/{treatmentId}
-        [HttpPut("{treatmentId}")]
+        [HttpPut("Update/{treatmentId}")]
         public async Task<IActionResult> UpdateTreatmentPlan(int treatmentId, [FromBody] TreatmentPlanRequestModelView treatmentPlanRequest)
         {
             if (!ModelState.IsValid)
@@ -127,7 +153,7 @@ namespace DentalBooking.Controllers
         }
 
         // DELETE: api/TreatmentPlan/{treatmentId}
-        [HttpDelete("{treatmentId}")]
+        [HttpDelete("Delete/{treatmentId}")]
         public async Task<IActionResult> DeleteTreatmentPlan(int treatmentId)
         {
             try

@@ -143,8 +143,7 @@ namespace Application.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            // Đăng ký 12 cuộc hẹn
+            // Đăng ký lịch định kỳ trong 12 tháng
             var response = await _appointmentServices.BookPeriodicAppointmentsAsync(model, 12);
             return Ok(response);
         }

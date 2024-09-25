@@ -11,8 +11,8 @@ namespace DentalBooking.Contract.Repository.Entity
     public class TreatmentPlans : BaseEntity
     {
         public string Description { get; set; } = string.Empty;
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         [ForeignKey("User")]
         public int CustomerId { get; set; }
