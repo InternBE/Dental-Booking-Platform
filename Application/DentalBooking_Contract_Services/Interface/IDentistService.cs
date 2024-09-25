@@ -11,5 +11,6 @@ namespace DentalBooking_Contract_Services.Interface
         Task<Appointment> ScheduleAppointmentAsync(Appointment appointment);
         Task<bool> UpdateAppointmentAsync(Appointment appointment);
         Task<bool> DeleteAppointmentAsync(int id);
+        Task<Appointment> ScheduleFollowUpAppointmentAsync(int appointmentId); // Thêm phương thức này
     }
 }

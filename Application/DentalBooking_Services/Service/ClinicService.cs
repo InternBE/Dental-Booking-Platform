@@ -14,12 +14,12 @@ namespace DentalBooking.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ClinicModelView> GetClinicByIdAsync(int id)
+        public async Task<ClinicResponseModelView> GetClinicByIdAsync(int id)
         {
             var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id);
             if (clinic == null) return null;
 
-            return new ClinicModelView
+            return new ClinicResponseModelView
             {
                 Id = clinic.Id,
                 ClinicName = clinic.ClinicName,
@@ -34,7 +34,7 @@ namespace DentalBooking.Services
             };
         }
 
-        public async Task<ClinicModelView> CreateClinicAsync(ClinicModelView model)
+        public async Task<ClinicResponseModelView> CreateClinicAsync(ClinicRequestModelView model)
         {
             var clinic = new Clinic
             {
@@ -47,17 +47,27 @@ namespace DentalBooking.Services
                 MaxPatientsPerSlot = model.MaxPatientsPerSlot,
                 MaxTreatmentPerSlot = model.MaxTreatmentPerSlot,
                 IsApproved = model.IsApproved
-
             };
 
             await _unitOfWork.ClinicRepository.AddAsync(clinic);
             await _unitOfWork.SaveAsync();
 
-            model.Id = clinic.Id;
-            return model;
+            return new ClinicResponseModelView
+            {
+                Id = clinic.Id,
+                ClinicName = clinic.ClinicName,
+                Address = clinic.Address,
+                PhoneNumber = clinic.PhoneNumber,
+                OpeningTime = clinic.OpeningTime,
+                ClosingTime = clinic.ClosingTime,
+                SlotDurationMinutes = clinic.SlotDurationMinutes,
+                MaxPatientsPerSlot = clinic.MaxPatientsPerSlot,
+                MaxTreatmentPerSlot = clinic.MaxTreatmentPerSlot,
+                IsApproved = clinic.IsApproved
+            };
         }
 
-        public async Task UpdateClinicAsync(int id, ClinicModelView model)
+        public async Task UpdateClinicAsync(int id, ClinicRequestModelView model)
         {
             var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id);
             if (clinic == null) throw new Exception("Clinic not found");
@@ -95,14 +105,14 @@ namespace DentalBooking.Services
             return true;
         }
 
-        public async Task<IEnumerable<ClinicModelView>> GetClinicsAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<ClinicResponseModelView>> GetClinicsAsync(int pageNumber, int pageSize)
         {
             var clinics = _unitOfWork.ClinicRepository.GetAll() // IEnumerable không hỗ trợ ToListAsync
                                      .Skip((pageNumber - 1) * pageSize)
                                      .Take(pageSize)
                                      .ToList(); // Dùng ToList thay vì ToListAsync
 
-            return clinics.Select(clinic => new ClinicModelView
+            return clinics.Select(clinic => new ClinicResponseModelView
             {
                 Id = clinic.Id,
                 ClinicName = clinic.ClinicName,

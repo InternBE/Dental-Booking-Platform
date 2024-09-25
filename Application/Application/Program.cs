@@ -107,7 +107,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IClinicService, ClinicService>();
 
-//builder.Services.AddScoped<IDentistService, DentistService>();
+builder.Services.AddScoped<IDentistService, DentistService>();
 
 // Đăng ký UserManager và SignInManager cho ASP.NET Identity
 builder.Services.AddScoped<UserManager<ApplicationUser>>();

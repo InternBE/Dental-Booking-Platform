@@ -1,6 +1,7 @@
-﻿using DentalBooking.Contract.Repository.Entity;
-using DentalBooking.Contract.Repository;
+﻿using DentalBooking.Contract.Repository;
+using DentalBooking.Contract.Repository.Entity;
 using DentalBooking_Contract_Services.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,6 @@ namespace DentalBooking_Services.Service
         public async Task<List<Appointment>> GetAllAppointmentsAsync()
         {
             var appointmentRepository = _unitOfWork.GetRepository<Appointment>();
-            // Sử dụng ToList() để chuyển đổi IEnumerable<Appointment> thành List<Appointment>
             return (await appointmentRepository.GetAllAsync()).ToList();
         }
 
@@ -81,6 +81,28 @@ namespace DentalBooking_Services.Service
             appointmentRepository.Delete(appointment);
             await _unitOfWork.SaveAsync();
             return true;
+        }
+
+        public async Task<Appointment> ScheduleFollowUpAppointmentAsync(int appointmentId)
+        {
+            // Lấy lịch hẹn hiện tại
+            var existingAppointment = await GetAppointmentByIdAsync(appointmentId);
+
+            // Tạo lịch hẹn tái khám mới
+            var followUpAppointment = new Appointment
+            {
+                AppointmentDate = existingAppointment.AppointmentDate.AddDays(30), // Có thể thay đổi số ngày tái khám
+                UserId = existingAppointment.UserId,
+                ClinicId = existingAppointment.ClinicId,
+                TreatmentPlanId = existingAppointment.TreatmentPlanId,
+                Status = "FollowUpScheduled" // Trạng thái của lịch hẹn tái khám
+            };
+
+            var appointmentRepository = _unitOfWork.GetRepository<Appointment>();
+            await appointmentRepository.InsertAsync(followUpAppointment);
+            await _unitOfWork.SaveAsync();
+
+            return followUpAppointment;
         }
     }
 }

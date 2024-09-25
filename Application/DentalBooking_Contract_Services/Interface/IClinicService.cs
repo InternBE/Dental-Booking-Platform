@@ -12,13 +12,12 @@ namespace DentalBooking_Contract_Services.Interface
 {
     public interface IClinicService
     {
-        Task<ClinicModelView> GetClinicByIdAsync(int id);
-        Task<ClinicModelView> CreateClinicAsync(ClinicModelView model);
-        //Task<User> CreateClinicAsync(User model);
-        Task UpdateClinicAsync(int id, ClinicModelView model);
+        Task<ClinicResponseModelView> GetClinicByIdAsync(int id);
+        Task<ClinicResponseModelView> CreateClinicAsync(ClinicRequestModelView model);
+        Task UpdateClinicAsync(int id, ClinicRequestModelView model);
         Task DeleteClinicAsync(int id);
 
         Task<bool> ApproveClinicAsync(int clinicId);
-        Task<IEnumerable<ClinicModelView>> GetClinicsAsync(int pageNumber, int pageSize);
+        Task<IEnumerable<ClinicResponseModelView>> GetClinicsAsync(int pageNumber, int pageSize);
     }
 }
