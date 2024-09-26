@@ -73,10 +73,10 @@ namespace Application.Controllers
         [HttpGet("AlertDayAfter")]
         public async Task<IActionResult> Alert([FromQuery] int UserId, [FromQuery] bool isAlert = true)
         {
-            var AppointmenDayAfter = _appointmentServices.AlertAppointmentDayAfter(UserId, isAlert);
-            if(AppointmenDayAfter == null)
+            IEnumerable<AppointmentResponeModelViews> AppointmenDayAfter = await _appointmentServices.AlertAppointmentDayBefore(UserId, isAlert);
+            if (AppointmenDayAfter == null)
             {
-                return NotFound(new {message = "Dont have Appointment Tomorrow"});
+                return NotFound(new { message = "Dont have Appointment Tomorrow" });
             }
             return Ok(AppointmenDayAfter);
         }
@@ -84,13 +84,27 @@ namespace Application.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequestModelView model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var result = await _appointmentServices.CreateAppointmentAsync(model);
+                return Ok(new
+                {
+                    message = "Đặt lịch hẹn thành công!",
+                    data = result
+                });
             }
-
-            var createdAppointment = await _appointmentServices.CreateAppointmentAsync(model);
-            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.AppointmentDate }, createdAppointment);
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Có lỗi xảy ra trong quá trình đặt lịch." });
+            }
         }
 
         // PUT: api/Appointment/{id}
@@ -123,29 +137,40 @@ namespace Application.Controllers
 
             return NoContent();
         }
-        // POST: api/Appointment/BookOneTime
-        [HttpPost("BookOneTime")]
-        public async Task<IActionResult> BookOneTimeAppointment([FromBody] AppointmentRequestModelView model)
+        
+        // POST: api/Appointment/BookPeriodic
+        [HttpPost("BookPeriodic")]
+        public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model, [FromQuery] int months = 12)
         {
+            // Kiểm tra model có hợp lệ hay không
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdAppointment = await _appointmentServices.BookOneTimeAppointmentAsync(model);
-            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.AppointmentDate }, createdAppointment);
-        }
-        // POST: api/Appointment/BookPeriodic
-        [HttpPost("BookPeriodic")]
-        public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model)
-        {
-            if (!ModelState.IsValid)
+            // Kiểm tra số tháng có hợp lệ không (ví dụ: tối đa 12 tháng)
+            if (months <= 0 || months > 12)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Số tháng phải nằm trong khoảng từ 1 đến 12.");
             }
-            // Đăng ký lịch định kỳ trong 12 tháng
-            var response = await _appointmentServices.BookPeriodicAppointmentsAsync(model, 12);
-            return Ok(response);
+
+            try
+            {
+                // Gọi hàm service để đăng ký lịch định kỳ
+                var response = await _appointmentServices.BookPeriodicAppointmentsAsync(model, months);
+                return Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Xử lý lỗi nếu có trùng lịch
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý các lỗi khác
+                return StatusCode(500, $"Có lỗi xảy ra: {ex.Message}");
+            }
         }
+
     }
 }

@@ -11,8 +11,7 @@ namespace DentalBooking_Contract_Services.Interface
         Task<AppointmentResponeModelViews> CreateAppointmentAsync(AppointmentRequestModelView model);
         Task<bool> UpdateAppointmentAsync(int id, AppointmentRequestModelView model);
         Task<bool> DeleteAppointmentAsync(int id);
-        Task<AppointmentResponeModelViews> BookOneTimeAppointmentAsync(AppointmentRequestModelView model);
         Task<List<AppointmentResponeModelViews>> BookPeriodicAppointmentsAsync(AppointmentRequestModelView model, int months);
-        Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayAfter(int userid, bool isAlert);
+        Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayBefore(int userid, bool isAlert);
     }
 }
