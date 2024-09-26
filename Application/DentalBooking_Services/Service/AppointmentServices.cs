@@ -231,10 +231,10 @@ namespace DentalBooking_Services.Service
             
         }
 
-        public async Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayAfter(int userid, bool isAlert)
+        public async Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayBefore(int userid, bool isAlert)
         {
             var repository = _unitOfWork.GetRepository<Appointment>();
-            var response = await AllAppointmentsByUserIdAsync(userid);
+            IEnumerable<AppointmentResponeModelViews> response = await AllAppointmentsByUserIdAsync(userid);
             if (response.IsNullOrEmpty())
             {
                 return null;

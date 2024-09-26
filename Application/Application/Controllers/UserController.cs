@@ -78,7 +78,7 @@ namespace Application.Controllers
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user,"ADMIN");
+                await _userManager.AddToRoleAsync(user,"CUSTOMER");
                 return Ok(new { message = "User registered successfully" });
             }
 

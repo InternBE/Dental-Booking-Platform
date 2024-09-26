@@ -73,7 +73,7 @@ namespace Application.Controllers
         [HttpGet("AlertDayAfter")]
         public async Task<IActionResult> Alert([FromQuery] int UserId, [FromQuery] bool isAlert = true)
         {
-            var AppointmenDayAfter = _appointmentServices.AlertAppointmentDayAfter(UserId, isAlert);
+            IEnumerable<AppointmentResponeModelViews> AppointmenDayAfter = await _appointmentServices.AlertAppointmentDayBefore(UserId, isAlert);
             if(AppointmenDayAfter == null)
             {
                 return NotFound(new {message = "Dont have Appointment Tomorrow"});
