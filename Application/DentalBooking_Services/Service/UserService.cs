@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using DentalBooking.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 
-
 public class UserService : IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -59,10 +58,28 @@ public class UserService : IUserService
         };
     }
 
-    // Các phương thức khác
-    public Task<IEnumerable<User>> GetAllUsersAsync()
+    // Phương thức phân trang mới: Lấy danh sách người dùng có phân trang
+    public async Task<IEnumerable<UserResponseModel>> GetPaginatedUsersAsync(int pageNumber, int pageSize)
     {
-        throw new NotImplementedException();
+        var users = await _dbContext.Users
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return users.Select(user => new UserResponseModel
+        {
+            Id = user.Id,
+            FullName = user.FullName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            ClinicId = user.ClinicId,
+        });
+    }
+
+    // Phương thức mới: Lấy tổng số lượng người dùng
+    public async Task<int> GetTotalUsersCountAsync()
+    {
+        return await _dbContext.Users.CountAsync();
     }
 
     public async Task<User> GetUserByIdAsync(int id)
@@ -121,5 +138,10 @@ public class UserService : IUserService
         doctor.IsApproved = true;
         await _userManager.UpdateAsync(doctor);
         return true;
+    }
+
+    public Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        throw new NotImplementedException();
     }
 }

@@ -19,13 +19,31 @@ namespace DentalBooking.Repository
         {
             _context = context;
         }
+        private IAppointmentRepository _appointmentRepository;
+          public IAppointmentRepository AppointmentRepository 
+        {
+    get
+    {
+        if (_appointmentRepository == null)
+        {
+                    _appointmentRepository = new AppointmentRepository(_context);
+    }
+        return _appointmentRepository;
+    }
+}
 
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
         // Thay đổi kiểu trả về của ClinicRepository thành IGenericRepository<Clinic>
         public IGenericRepository<Clinic> ClinicRepository =>
             _clinicRepository ??= new GenericRepository<Clinic>(_context);
 
         public IUserRepository Users =>
             _userRepository ??= new UserRepository(_context);
+
+        Contract.Repository.IAppointmentRepository IUnitOfWork.AppointmentRepository => throw new NotImplementedException();
 
         public IGenericRepository<T> GetRepository<T>() where T : class
         {

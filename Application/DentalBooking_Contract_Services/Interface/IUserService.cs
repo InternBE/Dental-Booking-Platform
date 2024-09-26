@@ -21,5 +21,9 @@ namespace DentalBooking_Contract_Services.Interface
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(int id);
         Task<bool> ApproveDoctorAsync(string doctorId);
+
+        // Phương thức mới cho phân trang
+        Task<IEnumerable<UserResponseModel>> GetPaginatedUsersAsync(int pageNumber, int pageSize);
+        Task<int> GetTotalUsersCountAsync();
     }
 }

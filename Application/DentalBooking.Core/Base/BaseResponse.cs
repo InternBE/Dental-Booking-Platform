@@ -10,6 +10,8 @@ namespace DentalBooking.Core.Base
 {
     public class BaseResponse<T>
     {
+        public bool Success;
+
         public T? Data { get; set; }
         public string? Message { get; set; }
         public StatusCodeHelper StatusCode { get; set; }
@@ -27,6 +29,9 @@ namespace DentalBooking.Core.Base
             Data = data;
             StatusCode = statusCode;
             Code = code;
+        }
+        public BaseResponse()
+        {
         }
 
         public BaseResponse(StatusCodeHelper statusCode, string code, string? message)

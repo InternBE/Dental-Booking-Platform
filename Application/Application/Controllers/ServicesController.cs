@@ -17,10 +17,26 @@ namespace DentalBooking.API.Controllers
 
         // GET: api/Service
         [HttpGet]
-        public async Task<IActionResult> GetAllServices()
+        public async Task<IActionResult> GetPaginatedServices([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var services = await _serviceServices.GetAllServicesAsync();
-            return Ok(services);
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new { message = "Page number and page size must be greater than 0." });
+            }
+
+            var services = await _serviceServices.GetPaginatedServicesAsync(pageNumber, pageSize);
+            var totalRecords = await _serviceServices.GetTotalServicesCountAsync();
+
+            var response = new
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
+                Data = services
+            };
+
+            return Ok(response);
         }
 
         // GET: api/Service/{id}
@@ -35,7 +51,7 @@ namespace DentalBooking.API.Controllers
             return Ok(service);
         }
 
-        // POST: api/Service
+        // POST: api/Service/Create
         [HttpPost("Create")]
         public async Task<IActionResult> CreateService([FromBody] ServiceRequestModelView model)
         {
@@ -48,7 +64,7 @@ namespace DentalBooking.API.Controllers
             return CreatedAtAction(nameof(GetServiceById), new { id = createdService.ServiceName }, createdService);
         }
 
-        // PUT: api/Service/{id}
+        // PUT: api/Service/Update/{id}
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateService(int id, [FromBody] ServiceRequestModelView model)
         {
@@ -66,7 +82,7 @@ namespace DentalBooking.API.Controllers
             return Ok(new { message = $"Dịch vụ với ID {id} đã được sửa thành công." });
         }
 
-        // DELETE: api/Service/{id}
+        // DELETE: api/Service/Delete/{id}
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteService(int id)
         {

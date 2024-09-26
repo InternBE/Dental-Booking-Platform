@@ -3,6 +3,7 @@ using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.Contract.Services;
 using DentalBooking.Core.Utils;
 using DentalBooking.ModelViews.AppointmentModelViews;
+using DentalBooking.Repository;
 using DentalBooking_Contract_Services.Interface;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +11,29 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DentalBooking_Services.Service
 {
-    public class AppointmentServices:IAppointmentService
+    public class Appointment_Service : IAppointmentService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private IAppointmentRepository _appointmentRepository;
 
-        public AppointmentServices(IUnitOfWork unitOfWork)
+        public Appointment_Service(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+        }
+        public Appointment_Service(IAppointmentRepository appointmentRepository)
+        {
+            _appointmentRepository = appointmentRepository;
+        }
+
+        public async Task<IEnumerable<Appointment>> GetPaginatedAppointmentsAsync(int pageNumber, int pageSize)
+        {
+            return await _appointmentRepository.GetPaginatedAppointmentsAsync(pageNumber, pageSize);
+        }
+
+        // Lấy tổng số lượng cuộc hẹn
+        public async Task<int> GetTotalAppointmentsCountAsync()
+        {
+            return await _appointmentRepository.GetTotalAppointmentsCountAsync();
         }
 
         public async Task<AppointmentResponeModelViews> CreateAppointmentAsync(AppointmentRequestModelView model)
@@ -41,7 +58,7 @@ namespace DentalBooking_Services.Service
                 UserId = appointmentEntity.UserId,
                 ClinicId = appointmentEntity.ClinicId,
                 TreatmentPlanId = appointmentEntity.TreatmentPlanId,
-               
+
             };
         }
 
@@ -140,7 +157,7 @@ namespace DentalBooking_Services.Service
             await repository.InsertAsync(appointmentEntity);
             await _unitOfWork.SaveAsync();
 
-            
+
             ScheduleReminder(appointmentEntity);
 
             return new AppointmentResponeModelViews
@@ -163,7 +180,7 @@ namespace DentalBooking_Services.Service
 
         private void SendReminder(int userId, DateTime appointmentDate)
         {
-           
+
         }
         //Điều trị định kỳ
         public async Task<List<AppointmentResponeModelViews>> BookPeriodicAppointmentsAsync(AppointmentRequestModelView model, int months)
@@ -218,7 +235,8 @@ namespace DentalBooking_Services.Service
             // Chờ để nhận danh sách các cuộc hẹn
             IEnumerable<Appointment> lAppointment = await repository.FindAsync(x => x.UserId == UserId);
 
-            return lAppointment.Select(appointment => new AppointmentResponeModelViews {
+            return lAppointment.Select(appointment => new AppointmentResponeModelViews
+            {
                 AppointmentDate = appointment.AppointmentDate,
                 Status = appointment.Status,
                 UserId = appointment.UserId,
@@ -226,9 +244,9 @@ namespace DentalBooking_Services.Service
                 TreatmentPlanId = appointment.TreatmentPlanId
             }
             );
-           
 
-            
+
+
         }
 
         public async Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayAfter(int userid, bool isAlert)
@@ -252,6 +270,42 @@ namespace DentalBooking_Services.Service
                 return null;
             }
             return haveAppointmentDaytBefore;
+        }
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDentistIdAsync(int dentistId)
+        {
+            return await _unitOfWork.AppointmentRepository.GetAppointmentsByDentistIdAsync(dentistId);
+        }
+
+        public Task<IEnumerable<AppointmentResponeModelViews>> AllAppointmentsByUserIdAsync(int UserId, int pageNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<AppointmentResponeModelViews>> GetWeeklyScheduleForDentist(int dentistId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<object>> GetAllAppointmentsAsync(int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
+      
+
+        public Task<IEnumerable<Appointment>> AllAppointmentsByUserIdAsync(int userId, int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetTotalAppointmentsByUserIdCountAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<double> IAppointmentService.GetTotalAppointmentsCountAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

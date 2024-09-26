@@ -29,6 +29,32 @@ public class TreatmentPlanService : ITreatmentPlanService
         });
     }
 
+    // Phương thức mới: Lấy danh sách kế hoạch điều trị với phân trang
+    public async Task<IEnumerable<TreatmentPlanResponseModelView>> GetPaginatedTreatmentPlansAsync(int pageNumber, int pageSize)
+    {
+        var treatmentPlans = await _unitOfWork.GetRepository<TreatmentPlans>()
+            .Entities
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return treatmentPlans.Select(treatmentPlan => new TreatmentPlanResponseModelView
+        {
+            Description = treatmentPlan.Description,
+            AppointmentDate = treatmentPlan.Appointments.FirstOrDefault()?.AppointmentDate ?? DateTime.MinValue,
+            Status = treatmentPlan.Appointments.FirstOrDefault()?.Status ?? "Pending", // Giá trị mặc định
+        });
+    }
+
+    // Phương thức mới: Lấy tổng số lượng kế hoạch điều trị
+    public async Task<int> GetTotalTreatmentPlansCountAsync()
+    {
+        var totalPlans = await _unitOfWork.GetRepository<TreatmentPlans>()
+            .Entities
+            .CountAsync();
+        return totalPlans;
+    }
+
     public async Task<TreatmentPlanResponseModelView> GetTreatmentPlanDetailsAsync(int treatmentPlanId)
     {
         var treatmentPlan = await _unitOfWork.GetRepository<TreatmentPlans>().GetByIdAsync(treatmentPlanId);
@@ -95,7 +121,6 @@ public class TreatmentPlanService : ITreatmentPlanService
         }
         catch (DbUpdateException ex)
         {
-            // Log lỗi nếu cần
             Console.WriteLine($"Error updating treatment plan: {ex.Message}");
             throw new Exception("Không thể cập nhật kế hoạch điều trị do lỗi cơ sở dữ liệu.");
         }
@@ -108,14 +133,12 @@ public class TreatmentPlanService : ITreatmentPlanService
 
     public async Task<bool> CreateTreatmentPlanAsync(TreatmentPlanRequestModelView treatmentRequestModel)
     {
-        // Kiểm tra sự tồn tại của khách hàng
         var customer = await _unitOfWork.GetRepository<User>().GetByIdAsync(treatmentRequestModel.CustomerId);
         if (customer == null)
         {
             throw new KeyNotFoundException("Không tìm thấy khách hàng với ID đã cung cấp.");
         }
 
-        // Tạo đối tượng TreatmentPlans
         var treatmentPlan = new TreatmentPlans
         {
             Description = treatmentRequestModel.Description,
@@ -128,14 +151,12 @@ public class TreatmentPlanService : ITreatmentPlanService
 
         try
         {
-            // Thêm kế hoạch điều trị vào cơ sở dữ liệu
             await _unitOfWork.GetRepository<TreatmentPlans>().AddAsync(treatmentPlan);
             await _unitOfWork.SaveAsync();
             return true;
         }
         catch (DbUpdateException ex)
         {
-            // Log lỗi nếu cần
             Console.WriteLine($"Lỗi khi tạo kế hoạch điều trị: {ex.Message}");
             throw new Exception("Không thể tạo kế hoạch điều trị do lỗi cơ sở dữ liệu.", ex);
         }
@@ -146,8 +167,6 @@ public class TreatmentPlanService : ITreatmentPlanService
         }
     }
 
-
-
     public async Task<bool> DeleteTreatmentPlanAsync(int treatmentId)
     {
         var treatmentPlan = await _unitOfWork.GetRepository<TreatmentPlans>().GetByIdAsync(treatmentId);
@@ -157,7 +176,6 @@ public class TreatmentPlanService : ITreatmentPlanService
             throw new KeyNotFoundException("Không tìm thấy kế hoạch điều trị.");
         }
 
-        // Xóa mềm: Cập nhật thông tin người xóa và thời gian xóa
         treatmentPlan.DeletedTime = DateTimeOffset.Now;
 
         try
@@ -168,7 +186,6 @@ public class TreatmentPlanService : ITreatmentPlanService
         }
         catch (DbUpdateException ex)
         {
-            // Log lỗi nếu cần
             Console.WriteLine($"Error deleting treatment plan: {ex.Message}");
             throw new Exception("Không thể xóa kế hoạch điều trị do lỗi cơ sở dữ liệu.");
         }
@@ -196,18 +213,15 @@ public class TreatmentPlanService : ITreatmentPlanService
     public async Task<IEnumerable<TreatmentPlanResponseModelView>> GetAllTreatmentPlansForCustomerAsync(int customerId)
     {
         var treatmentPlans = await _unitOfWork.GetRepository<TreatmentPlans>()
-       .Entities
-       .Where(tp => tp.CustomerId == customerId)
-       .ToListAsync();
+            .Entities
+            .Where(tp => tp.CustomerId == customerId)
+            .ToListAsync();
 
-        // Chuyển đổi danh sách TreatmentPlans thành danh sách TreatmentPlanResponseModelView
         return treatmentPlans.Select(treatmentPlan => new TreatmentPlanResponseModelView
         {
             Description = treatmentPlan.Description,
             StartDate = treatmentPlan.StartDate,
-            EndDate = treatmentPlan.EndDate,     
+            EndDate = treatmentPlan.EndDate,
         });
     }
-
-
 }
