@@ -9,6 +9,9 @@ namespace DentalBooking.Contract.Repository
     {
         // Generic repository methods
         IGenericRepository<T> GetRepository<T>() where T : class;
+        IAppointmentRepository AppointmentRepository { get; }
+
+        Task<int> SaveChangesAsync();
 
         // Specific repositories
         IGenericRepository<Clinic> ClinicRepository { get; }
@@ -24,4 +27,6 @@ namespace DentalBooking.Contract.Repository
         Task SaveAsync();
         Task<int> CompleteAsync();
     }
+
+   
 }

@@ -9,5 +9,7 @@ namespace DentalBooking.Contract.Services
         Task<ServiceResponeModelViews> GetServiceByIdAsync(int id);
         Task<bool> UpdateServiceAsync(int id, ServiceRequestModelView model);
         Task<bool> DeleteServiceAsync(int id);
+        Task<IEnumerable<ServiceResponeModelViews>> GetPaginatedServicesAsync(int pageNumber, int pageSize);
+        Task<int> GetTotalServicesCountAsync();
     }
 }

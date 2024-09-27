@@ -9,6 +9,7 @@ namespace DentalBooking.Contract.Repository.Entity
     {
         public DateTime AppointmentDate { get; set; }
         public string Status { get; set; } = "Pending";
+        public int DentistId { get; set; }
 
         // ForeignKey
         public int UserId { get; set; }

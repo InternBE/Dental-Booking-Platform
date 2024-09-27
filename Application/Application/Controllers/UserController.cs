@@ -34,13 +34,29 @@ namespace Application.Controllers
             _configuration = configuration;
         }
 
-        // Lấy danh sách tất cả người dùng (Chỉ Admin mới có quyền truy cập)
-        [Authorize(Roles = "Admin")]
+        // Lấy danh sách tất cả người dùng (Chỉ Admin mới có quyền truy cập) với phân trang
+        [Authorize(Roles = "ADMIN")]
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var users = await _userService.GetAll();
-            return Ok(BaseResponse<IList<UserResponseModel>>.OkResponse(users));
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new { message = "Page number and page size must be greater than 0." });
+            }
+
+            var users = await _userService.GetPaginatedUsersAsync(pageNumber, pageSize);
+            var totalRecords = await _userService.GetTotalUsersCountAsync();
+
+            var response = new
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
+                Data = users
+            };
+
+            return Ok(response);
         }
 
         // Lấy thông tin người dùng theo ID
@@ -69,17 +85,16 @@ namespace Application.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            UserRequestModel requestModel = new UserRequestModel() {Email= model.Email,ClinicId = model.ClinicId };
+            UserRequestModel requestModel = new UserRequestModel() { Email = model.Email, ClinicId = model.ClinicId };
 
-            var userrespone = await _userService.Create(requestModel);
+            var userResponse = await _userService.Create(requestModel);
 
-
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email, UserId = userrespone.Id};
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email, UserId = userResponse.Id };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user,"ADMIN");
+                await _userManager.AddToRoleAsync(user, "ADMIN");
                 return Ok(new { message = "User registered successfully" });
             }
 
@@ -110,7 +125,6 @@ namespace Application.Controllers
 
             return Unauthorized("Email hoặc mật khẩu không đúng");
         }
-
 
         // Cập nhật thông tin người dùng
         [Authorize(Roles = "Admin,Customer,Dentist")]
