@@ -1,5 +1,6 @@
-using DentalBooking.Contract.Repository.Entity;
+﻿using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.ModelViews.AppointmentModelViews;
+using DentalBooking.ModelViews.DentistModelViews;
 
 namespace DentalBooking_Contract_Services.Interface
 {
@@ -17,6 +18,8 @@ namespace DentalBooking_Contract_Services.Interface
         Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayAfter(int userId, bool isAlert);
         Task<IEnumerable<Appointment>> GetPaginatedAppointmentsAsync(int pageNumber, int pageSize);
         Task<double> GetTotalAppointmentsCountAsync();
+
+        // Cập nhật kiểu trả về của phương thức này
         Task<Appointment> ScheduleFollowUpAppointmentAsync(int appointmentId);
     }
 }
