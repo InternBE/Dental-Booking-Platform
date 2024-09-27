@@ -175,20 +175,7 @@ namespace Application.Controllers
             return NoContent();
         }
 
-        // POST: api/Appointment/BookOneTime
-        [HttpPost("BookOneTime")]
-        public async Task<IActionResult> BookOneTimeAppointment([FromBody] AppointmentRequestModelView model)
-        {
-            // Kiểm tra model có hợp lệ hay không
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var createdAppointment = await _appointmentServices.BookOneTimeAppointmentAsync(model);
-            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.AppointmentDate }, createdAppointment);
-        }
-
+        
         // POST: api/Appointment/BookPeriodic
         [HttpPost("BookPeriodic")]
         public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model, [FromQuery] int months = 12)

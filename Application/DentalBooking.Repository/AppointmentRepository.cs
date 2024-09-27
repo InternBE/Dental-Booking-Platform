@@ -23,7 +23,7 @@ namespace DentalBooking.Repository
         public async Task<IEnumerable<Appointment>> GetAppointmentsByDentistIdAsync(int dentistId)
         {
             return await _context.Appointments
-                .Where(a => a.DentistId == dentistId)
+                .Where(a => a.UserId == dentistId)
                 .ToListAsync();
         }
         public async Task<IEnumerable<Appointment>> GetPaginatedAppointmentsAsync(int pageNumber, int pageSize)
