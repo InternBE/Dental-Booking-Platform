@@ -106,7 +106,7 @@ try
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IClinicService, ClinicService>();
-    builder.Services.AddScoped<IDentistService, DentistService>();
+    //builder.Services.AddScoped<IDentistService, DentistService>();
     builder.Services.AddScoped<UserManager<ApplicationUser>>();
     builder.Services.AddScoped<SignInManager<ApplicationUser>>();
     builder.Services.AddScoped<ITreatmentPlanService, TreatmentPlanService>();
@@ -114,6 +114,7 @@ try
     builder.Services.AddScoped<IServiceServices, ServiceServices>();
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IMessageService, MessageService>();
+    builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
     // Build app
     var app = builder.Build();

@@ -248,5 +248,27 @@ namespace DentalBooking_Services.Service
         {
             throw new NotImplementedException();
         }
+        // Tạo lịch hẹn tái khám mới cho Customer
+        public async Task<Appointment> ScheduleFollowUpAppointmentAsync(int appointmentId)
+        {
+            // Lấy lịch hẹn hiện tại
+            var existingAppointment = await GetAppointmentByIdAsync(appointmentId);
+
+            // Tạo lịch hẹn tái khám mới
+            var followUpAppointment = new Appointment
+            {
+                AppointmentDate = existingAppointment.AppointmentDate.AddDays(30), // Có thể thay đổi số ngày tái khám
+                UserId = existingAppointment.UserId,
+                ClinicId = existingAppointment.ClinicId,
+                TreatmentPlanId = existingAppointment.TreatmentPlanId,
+                Status = "FollowUpScheduled" // Trạng thái của lịch hẹn tái khám
+            };
+
+            var appointmentRepository = _unitOfWork.GetRepository<Appointment>();
+            await appointmentRepository.InsertAsync(followUpAppointment);
+            await _unitOfWork.SaveAsync();
+
+            return followUpAppointment;
+        }
     }
 }

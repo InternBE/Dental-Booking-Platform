@@ -17,5 +17,6 @@ namespace DentalBooking_Contract_Services.Interface
         Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayAfter(int userId, bool isAlert);
         Task<IEnumerable<Appointment>> GetPaginatedAppointmentsAsync(int pageNumber, int pageSize);
         Task<double> GetTotalAppointmentsCountAsync();
+        Task<Appointment> ScheduleFollowUpAppointmentAsync(int appointmentId);
     }
 }

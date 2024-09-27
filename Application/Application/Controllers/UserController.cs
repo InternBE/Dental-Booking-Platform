@@ -60,8 +60,8 @@ namespace Application.Controllers
         }
 
         // Lấy thông tin người dùng theo ID
-        //[Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
-        [Authorize(Roles = "Admin,Customer,Dentist")]
+        [Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
+        //[Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -127,7 +127,7 @@ namespace Application.Controllers
         }
 
         // Cập nhật thông tin người dùng
-        [Authorize(Roles = "Admin,Customer,Dentist")]
+        [Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel userModel)
         {
@@ -166,7 +166,7 @@ namespace Application.Controllers
         }
 
         // Xóa người dùng
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
