@@ -1,5 +1,4 @@
-﻿
-using DentalBooking_Contract_Services.Interface;
+﻿using DentalBooking_Contract_Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -23,8 +22,12 @@ namespace Application.Controllers
         public async Task<ActionResult> ApproveClinic(int clinicId)
         {
             var result = await _clinicService.ApproveClinicAsync(clinicId);
-            if (!result) return NotFound("Clinic not found");
-            return NoContent();
+            if (!result)
+            {
+                return NotFound(new { Message = "Phòng khám không được tìm thấy." });
+            }
+
+            return Ok(new { Message = "Phòng khám đã được xét duyệt thành công." });
         }
 
         // Xét duyệt bác sĩ
@@ -32,8 +35,12 @@ namespace Application.Controllers
         public async Task<ActionResult> ApproveDoctor(string doctorId)
         {
             var result = await _userService.ApproveDoctorAsync(doctorId);
-            if (!result) return NotFound("Doctor not found");
-            return NoContent();
+            if (!result)
+            {
+                return NotFound(new { Message = "Bác sĩ không được tìm thấy." });
+            }
+
+            return Ok(new { Message = "Bác sĩ đã được xét duyệt thành công." });
         }
     }
 }

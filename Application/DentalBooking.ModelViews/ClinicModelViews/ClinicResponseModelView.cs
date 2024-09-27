@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DentalBooking.ModelViews.ClinicModelViews
 {
-    public class ClinicModelView
+    public class ClinicResponseModelView
     {
         public int Id { get; set; }
         public string ClinicName { get; set; }

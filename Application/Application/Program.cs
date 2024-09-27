@@ -106,6 +106,7 @@ try
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IClinicService, ClinicService>();
+    builder.Services.AddScoped<IDentistService, DentistService>();
     builder.Services.AddScoped<UserManager<ApplicationUser>>();
     builder.Services.AddScoped<SignInManager<ApplicationUser>>();
     builder.Services.AddScoped<ITreatmentPlanService, TreatmentPlanService>();
@@ -121,7 +122,7 @@ try
     {
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-        string[] roleNames = { "Admin", "Customer", "Dentist" };
+        string[] roleNames = { "ADMIN", "CUSTOMER", "DENTIST" };
         foreach (var roleName in roleNames)
         {
             var roleExist = await roleManager.RoleExistsAsync(roleName);
