@@ -82,7 +82,7 @@ namespace DentalBooking_Services.Service
             await _unitOfWork.SaveAsync();
             return true;
         }
-
+        // Tạo lịch hẹn tái khám mới cho Customer
         public async Task<Appointment> ScheduleFollowUpAppointmentAsync(int appointmentId)
         {
             // Lấy lịch hẹn hiện tại
