@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using DentalBooking.Contract.Repository.IUOW;
 using DentalBooking.Core.Base;
+using DentalBooking.ModelViews.DentistModelViews;
 
 namespace Application.Controllers
 {
@@ -175,7 +176,7 @@ namespace Application.Controllers
             return NoContent();
         }
 
-        
+
         // POST: api/Appointment/BookPeriodic
         [HttpPost("BookPeriodic")]
         public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model, [FromQuery] int months = 12)
@@ -211,7 +212,7 @@ namespace Application.Controllers
         }
 
         // GET: api/Appointment/dentist-weekly-schedule
-        [Authorize(Roles = "Dentist")]
+        [Authorize(Roles = "DENTIST")]
         [HttpGet("dentist-weekly-schedule")]
         public async Task<IActionResult> GetWeeklyScheduleForDentist()
         {
@@ -260,6 +261,30 @@ namespace Application.Controllers
                     Success = false,
                     Message = $"Error: {ex.Message}"
                 });
+            }
+        }
+        // Lên lịch tái khám
+        [HttpPost("appointments/{id}/followup")]
+        public async Task<ActionResult<DentistResponseModelView>> ScheduleFollowUp(int id)
+        {
+            try
+            {
+                var followUpAppointment = await _appointmentServices.ScheduleFollowUpAppointmentAsync(id);
+                var response = new DentistResponseModelView
+                {
+                    Id = followUpAppointment.Id,
+                    AppointmentDate = followUpAppointment.AppointmentDate,
+                    Status = followUpAppointment.Status,
+                    UserId = followUpAppointment.UserId,
+                    ClinicId = followUpAppointment.ClinicId,
+                    TreatmentPlanId = followUpAppointment.TreatmentPlanId
+                };
+
+                return CreatedAtAction(nameof(GetAppointmentById), new { id = response.Id }, response);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = $"Không tìm thấy lịch hẹn với ID {id}: {ex.Message}" });
             }
         }
     }
