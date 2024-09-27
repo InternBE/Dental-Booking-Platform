@@ -1,4 +1,4 @@
-﻿using Azure;
+using Azure;
 using DentalBooking.Contract.Repository.Entity;
 using DentalBooking.ModelViews.AppointmentModelViews;
 using DentalBooking_Contract_Services.Interface;
@@ -121,13 +121,27 @@ namespace Application.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequestModelView model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var result = await _appointmentServices.CreateAppointmentAsync(model);
+                return Ok(new
+                {
+                    message = "Đặt lịch hẹn thành công!",
+                    data = result
+                });
             }
-
-            var createdAppointment = await _appointmentServices.CreateAppointmentAsync(model);
-            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointment.AppointmentDate }, createdAppointment);
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Có lỗi xảy ra trong quá trình đặt lịch." });
+            }
         }
 
         // PUT: api/Appointment/Update/{id}
@@ -165,6 +179,7 @@ namespace Application.Controllers
         [HttpPost("BookOneTime")]
         public async Task<IActionResult> BookOneTimeAppointment([FromBody] AppointmentRequestModelView model)
         {
+            // Kiểm tra model có hợp lệ hay không
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -176,15 +191,36 @@ namespace Application.Controllers
 
         // POST: api/Appointment/BookPeriodic
         [HttpPost("BookPeriodic")]
-        public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model)
+        public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model, [FromQuery] int months = 12)
         {
+            // Kiểm tra model có hợp lệ hay không
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var response = await _appointmentServices.BookPeriodicAppointmentsAsync(model, 12);
-            return Ok(response);
+            // Kiểm tra số tháng có hợp lệ không (ví dụ: tối đa 12 tháng)
+            if (months <= 0 || months > 12)
+            {
+                return BadRequest("Số tháng phải nằm trong khoảng từ 1 đến 12.");
+            }
+
+            try
+            {
+                // Gọi hàm service để đăng ký lịch định kỳ
+                var response = await _appointmentServices.BookPeriodicAppointmentsAsync(model, months);
+                return Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Xử lý lỗi nếu có trùng lịch
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý các lỗi khác
+                return StatusCode(500, $"Có lỗi xảy ra: {ex.Message}");
+            }
         }
 
         // GET: api/Appointment/dentist-weekly-schedule

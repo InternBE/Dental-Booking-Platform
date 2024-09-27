@@ -1,27 +1,20 @@
-﻿using DentalBooking.Contract.Repository;
+using DentalBooking.Contract.Repository;
 using DentalBooking.Contract.Repository.Entity;
-using DentalBooking.Contract.Services;
-using DentalBooking.Core.Utils;
 using DentalBooking.ModelViews.AppointmentModelViews;
-using DentalBooking.Repository;
 using DentalBooking_Contract_Services.Interface;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace DentalBooking_Services.Service
 {
     public class Appointment_Service : IAppointmentService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private IAppointmentRepository _appointmentRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
 
-        public Appointment_Service(IUnitOfWork unitOfWork)
+        public Appointment_Service(IUnitOfWork unitOfWork, IAppointmentRepository appointmentRepository)
         {
             _unitOfWork = unitOfWork;
-        }
-        public Appointment_Service(IAppointmentRepository appointmentRepository)
-        {
             _appointmentRepository = appointmentRepository;
         }
 
@@ -30,21 +23,30 @@ namespace DentalBooking_Services.Service
             return await _appointmentRepository.GetPaginatedAppointmentsAsync(pageNumber, pageSize);
         }
 
-        // Lấy tổng số lượng cuộc hẹn
-        public async Task<int> GetTotalAppointmentsCountAsync()
+        public async Task<double> GetTotalAppointmentsCountAsync()
         {
             return await _appointmentRepository.GetTotalAppointmentsCountAsync();
         }
 
         public async Task<AppointmentResponeModelViews> CreateAppointmentAsync(AppointmentRequestModelView model)
         {
+            if (model == null || model.UserId <= 0 || model.ClinicId <= 0 || model.TreatmentPlanId <= 0)
+            {
+                throw new ArgumentException("Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra các trường thông tin.");
+            }
+
+            if (model.AppointmentDate <= DateTime.Now)
+            {
+                throw new InvalidOperationException("Ngày hẹn phải là ngày trong tương lai.");
+            }
+
             var appointmentEntity = new Appointment
             {
-                AppointmentDate = model.AppointmentDate,
-                Status = model.Status,
                 UserId = model.UserId,
                 ClinicId = model.ClinicId,
-                TreatmentPlanId = model.TreatmentPlanId
+                TreatmentPlanId = model.TreatmentPlanId,
+                AppointmentDate = model.AppointmentDate,
+                Status = model.Status
             };
 
             var repository = _unitOfWork.GetRepository<Appointment>();
@@ -57,19 +59,14 @@ namespace DentalBooking_Services.Service
                 Status = appointmentEntity.Status,
                 UserId = appointmentEntity.UserId,
                 ClinicId = appointmentEntity.ClinicId,
-                TreatmentPlanId = appointmentEntity.TreatmentPlanId,
-
+                TreatmentPlanId = appointmentEntity.TreatmentPlanId
             };
         }
 
         public async Task<IEnumerable<AppointmentResponeModelViews>> GetAllAppointmentsAsync()
         {
             var repository = _unitOfWork.GetRepository<Appointment>();
-
-            // Chờ để nhận danh sách các cuộc hẹn
             var appointments = await repository.GetAllAsync();
-
-            // Sử dụng phương thức Where trên danh sách đã nhận
             var filteredAppointments = appointments.Where(a => a.DeletedTime == null).ToList();
 
             return filteredAppointments.Select(appointment => new AppointmentResponeModelViews
@@ -117,93 +114,75 @@ namespace DentalBooking_Services.Service
             return true;
         }
 
-
         public async Task<bool> DeleteAppointmentAsync(int id)
         {
             var repository = _unitOfWork.GetRepository<Appointment>();
             var appointment = await repository.GetByIdAsync(id);
 
-            if (appointment == null) return false; // Không tìm thấy cuộc hẹn
+            if (appointment == null) return false;
 
-            // Nếu bản ghi chưa bị xóa mềm, thực hiện xóa mềm
             if (appointment.DeletedTime == null)
             {
-                appointment.DeletedTime = DateTimeOffset.Now; // Gắn thời gian xóa mềm
-                appointment.DeletedBy = "Tên người xóa"; // Thay thế bằng thông tin người dùng hiện tại nếu có
-                repository.Update(appointment); // Cập nhật bản ghi để xóa mềm
+                appointment.DeletedTime = DateTimeOffset.Now;
+                appointment.DeletedBy = "Current User"; // Thay thế bằng thông tin người dùng hiện tại nếu có
+                repository.Update(appointment);
             }
             else
             {
-                // Nếu bản ghi đã bị xóa mềm, thực hiện xóa vĩnh viễn
-                repository.Delete(id); // Xóa bản ghi khỏi DB
+                repository.Delete(id);
             }
 
-            await _unitOfWork.SaveAsync(); // Lưu thay đổi
+            await _unitOfWork.SaveAsync();
             return true;
         }
-        //Đăng ký lịch khám 1 lần
-        public async Task<AppointmentResponeModelViews> BookOneTimeAppointmentAsync(AppointmentRequestModelView model)
-        {
-            var appointmentEntity = new Appointment
-            {
-                UserId = model.UserId,
-                ClinicId = model.ClinicId,
-                TreatmentPlanId = model.TreatmentPlanId,
-                AppointmentDate = model.AppointmentDate,
-                Status = model.Status
-            };
 
-            var repository = _unitOfWork.GetRepository<Appointment>();
-            await repository.InsertAsync(appointmentEntity);
-            await _unitOfWork.SaveAsync();
-
-
-            ScheduleReminder(appointmentEntity);
-
-            return new AppointmentResponeModelViews
-            {
-                AppointmentDate = appointmentEntity.AppointmentDate,
-                Status = appointmentEntity.Status,
-                UserId = appointmentEntity.UserId,
-                ClinicId = appointmentEntity.ClinicId,
-                TreatmentPlanId = appointmentEntity.TreatmentPlanId
-            };
-        }
-
-        // Đặt lịch nhắc nhở 1 ngày trước ngày hạn
-        private void ScheduleReminder(Appointment appointmentEntity)
-        {
-            var reminderDate = appointmentEntity.AppointmentDate.AddDays(-1);
-            //Sử dụng Hangfire.Core để tạo một bộ lập lịch công việc nền
-            BackgroundJob.Schedule(() => SendReminder(appointmentEntity.UserId, appointmentEntity.AppointmentDate), reminderDate);
-        }
-
-        private void SendReminder(int userId, DateTime appointmentDate)
-        {
-
-        }
-        //Điều trị định kỳ
         public async Task<List<AppointmentResponeModelViews>> BookPeriodicAppointmentsAsync(AppointmentRequestModelView model, int months)
         {
+            if (model == null || model.UserId <= 0 || model.ClinicId <= 0 || model.TreatmentPlanId <= 0)
+            {
+                throw new ArgumentException("Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra các trường thông tin.");
+            }
+
+            if (months <= 0)
+            {
+                throw new ArgumentException("Số tháng phải lớn hơn 0.");
+            }
+
+            if (model.AppointmentDate <= DateTime.Now)
+            {
+                throw new InvalidOperationException("Ngày hẹn phải là ngày trong tương lai.");
+            }
+
+            if (months > 12)
+            {
+                throw new InvalidOperationException("Chỉ được phép đặt lịch trong vòng 12 tháng.");
+            }
+
             var repository = _unitOfWork.GetRepository<Appointment>();
             var responseAppointments = new List<AppointmentResponeModelViews>();
 
-            // Lấy danh sách tất cả cuộc hẹn của nha sĩ trong khoảng thời gian cần kiểm tra
             var dentistAppointments = await repository.Entities
                 .Where(a => a.ClinicId == model.ClinicId && a.AppointmentDate >= model.AppointmentDate)
+                .ToListAsync();
+
+            var userAppointments = await repository.Entities
+                .Where(a => a.UserId == model.UserId && a.AppointmentDate >= model.AppointmentDate)
                 .ToListAsync();
 
             for (int i = 0; i < months; i++)
             {
                 var appointmentDate = model.AppointmentDate.AddMonths(i);
 
-                // Kiểm tra nếu nha sĩ có lịch trùng
                 if (dentistAppointments.Any(a => a.AppointmentDate.Date == appointmentDate.Date))
                 {
                     throw new InvalidOperationException($"Nha sĩ đã có lịch hẹn vào ngày {appointmentDate.ToShortDateString()}");
                 }
 
-                // Tạo và lưu cuộc hẹn mới
+                if (userAppointments.Any(a => a.AppointmentDate.Date == appointmentDate.Date))
+                {
+                    throw new InvalidOperationException($"Người dùng đã có lịch hẹn vào ngày {appointmentDate.ToShortDateString()}");
+                }
+
                 var appointmentEntity = new Appointment
                 {
                     UserId = model.UserId,
@@ -214,6 +193,7 @@ namespace DentalBooking_Services.Service
                 };
 
                 await repository.InsertAsync(appointmentEntity);
+
                 responseAppointments.Add(new AppointmentResponeModelViews
                 {
                     AppointmentDate = appointmentEntity.AppointmentDate,
@@ -225,85 +205,46 @@ namespace DentalBooking_Services.Service
             }
 
             await _unitOfWork.SaveAsync();
+
             return responseAppointments;
         }
 
         public async Task<IEnumerable<AppointmentResponeModelViews>> AllAppointmentsByUserIdAsync(int UserId)
         {
             var repository = _unitOfWork.GetRepository<Appointment>();
+            var appointments = await repository.FindAsync(x => x.UserId == UserId);
 
-            // Chờ để nhận danh sách các cuộc hẹn
-            IEnumerable<Appointment> lAppointment = await repository.FindAsync(x => x.UserId == UserId);
-
-            return lAppointment.Select(appointment => new AppointmentResponeModelViews
+            return appointments.Select(appointment => new AppointmentResponeModelViews
             {
                 AppointmentDate = appointment.AppointmentDate,
                 Status = appointment.Status,
                 UserId = appointment.UserId,
                 ClinicId = appointment.ClinicId,
                 TreatmentPlanId = appointment.TreatmentPlanId
-            }
-            );
-
-
-
+            });
         }
 
-        public async Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayAfter(int userid, bool isAlert)
+        public async Task<IEnumerable<AppointmentResponeModelViews>> AlertAppointmentDayAfter(int userId, bool isAlert)
         {
             var repository = _unitOfWork.GetRepository<Appointment>();
-            var response = await AllAppointmentsByUserIdAsync(userid);
-            if (response.IsNullOrEmpty())
+            var response = await AllAppointmentsByUserIdAsync(userId);
+            if (response == null || !isAlert)
             {
                 return null;
             }
-            if (!isAlert)
-            {
-                return null;
-            }
-            DateOnly Today = DateOnly.FromDateTime(DateTime.Now);
-            DateOnly Tomorrow = Today.AddDays(1);
 
-            var haveAppointmentDaytBefore = response.Where(appointment => DateOnly.FromDateTime(appointment.AppointmentDate).Equals(Tomorrow));
-            if (haveAppointmentDaytBefore == null)
-            {
-                return null;
-            }
-            return haveAppointmentDaytBefore;
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            DateOnly tomorrow = today.AddDays(1);
+
+            return response.Where(appointment => DateOnly.FromDateTime(appointment.AppointmentDate) == tomorrow);
         }
+
         public async Task<IEnumerable<Appointment>> GetAppointmentsByDentistIdAsync(int dentistId)
         {
-            return await _unitOfWork.AppointmentRepository.GetAppointmentsByDentistIdAsync(dentistId);
-        }
-
-        public Task<IEnumerable<AppointmentResponeModelViews>> AllAppointmentsByUserIdAsync(int UserId, int pageNumber)
-        {
-            throw new NotImplementedException();
+            return await _appointmentRepository.GetAppointmentsByDentistIdAsync(dentistId);
         }
 
         public Task<List<AppointmentResponeModelViews>> GetWeeklyScheduleForDentist(int dentistId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<object>> GetAllAppointmentsAsync(int pageNumber, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
-
-      
-
-        public Task<IEnumerable<Appointment>> AllAppointmentsByUserIdAsync(int userId, int pageNumber, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> GetTotalAppointmentsByUserIdCountAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<double> IAppointmentService.GetTotalAppointmentsCountAsync()
         {
             throw new NotImplementedException();
         }
