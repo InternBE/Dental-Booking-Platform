@@ -106,5 +106,34 @@ namespace DentalBooking_Services.Service
             return true;
         }
 
+        // Phương thức mới để hỗ trợ phân trang
+        public async Task<IEnumerable<ServiceResponeModelViews>> GetPaginatedServicesAsync(int pageNumber, int pageSize)
+        {
+            var repository = _unitOfWork.GetRepository<DentalBooking.Contract.Repository.Entity.Services>();
+            var services = await repository.GetAllAsync();
+
+            // Lọc các dịch vụ chưa bị xóa mềm và phân trang
+            var filteredServices = services.Where(s => s.DeletedTime == null)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize)
+                                           .ToList();
+
+            return filteredServices.Select(service => new ServiceResponeModelViews
+            {
+                ServiceName = service.ServiceName,
+                Description = service.Description,
+                Price = service.Price
+            }).ToList();
+        }
+
+        // Phương thức mới để lấy tổng số lượng dịch vụ
+        public async Task<int> GetTotalServicesCountAsync()
+        {
+            var repository = _unitOfWork.GetRepository<DentalBooking.Contract.Repository.Entity.Services>();
+            var services = await repository.GetAllAsync();
+
+            // Đếm các dịch vụ chưa bị xóa mềm
+            return services.Count(s => s.DeletedTime == null);
+        }
     }
 }

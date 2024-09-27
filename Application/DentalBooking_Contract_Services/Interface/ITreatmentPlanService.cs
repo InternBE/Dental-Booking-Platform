@@ -6,7 +6,14 @@ namespace DentalBooking_Contract_Services.Interface
 {
     public interface ITreatmentPlanService
     {
+        // Lấy tất cả kế hoạch điều trị (không phân trang)
         Task<IEnumerable<TreatmentPlanResponseModelView>> GetAllTreatmentPlansAsync();
+
+        // Lấy danh sách kế hoạch điều trị với phân trang
+        Task<IEnumerable<TreatmentPlanResponseModelView>> GetPaginatedTreatmentPlansAsync(int pageNumber, int pageSize);
+
+        // Lấy tổng số lượng kế hoạch điều trị
+        Task<int> GetTotalTreatmentPlansCountAsync();
 
         // Lấy chi tiết kế hoạch điều trị theo ID
         Task<TreatmentPlanResponseModelView> GetTreatmentPlanDetailsAsync(int treatmentPlanId);
@@ -23,6 +30,7 @@ namespace DentalBooking_Contract_Services.Interface
         // Xóa kế hoạch điều trị theo ID
         Task<bool> DeleteTreatmentPlanAsync(int treatmentId);
 
+        // Gửi kế hoạch điều trị tới khách hàng
         Task SendTreatmentPlanToCustomerAsync(int customerId, int doctorId);
     }
 }

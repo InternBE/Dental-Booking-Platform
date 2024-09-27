@@ -18,19 +18,34 @@ namespace DentalBooking.Controllers
             _treatmentService = treatmentService;
         }
 
-        // Lấy tất cả cuộc hẹn
+        // Lấy tất cả cuộc hẹn với phân trang
         [HttpGet]
-        public async Task<IActionResult> GetAllAppointments()
+        public async Task<IActionResult> GetPaginatedTreatmentPlans([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var appointments = await _treatmentService.GetAllTreatmentPlansAsync();
-                return Ok(appointments);
+                if (pageNumber <= 0 || pageSize <= 0)
+                {
+                    return BadRequest(new { message = "Page number and page size must be greater than 0." });
+                }
+
+                var treatmentPlans = await _treatmentService.GetPaginatedTreatmentPlansAsync(pageNumber, pageSize);
+                var totalRecords = await _treatmentService.GetTotalTreatmentPlansCountAsync();
+
+                var response = new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
+                    Data = treatmentPlans
+                };
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                // Xử lý lỗi
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { Code = "server_error", Message = ex.Message });
             }
         }
 
@@ -39,25 +54,21 @@ namespace DentalBooking.Controllers
         public async Task<IActionResult> GetTreatmentPlan(int customerId)
         {
             try
-    {
-        // Lấy danh sách kế hoạch điều trị của khách hàng
-        var treatmentPlans = await _treatmentService.GetAllTreatmentPlansForCustomerAsync(customerId);
-        
-        // Kiểm tra nếu không có kế hoạch điều trị nào
-        if (treatmentPlans == null || !treatmentPlans.Any())
-        {
-            return NotFound(new { Code = "not_found", Message = "Không tìm thấy kế hoạch điều trị cho khách hàng." });
-        }
+            {
+                var treatmentPlans = await _treatmentService.GetAllTreatmentPlansForCustomerAsync(customerId);
 
-        return Ok(treatmentPlans); // Trả về danh sách kế hoạch điều trị nếu tìm thấy
-    }
-    catch (Exception ex)
-    {
-        // Trả về lỗi server thay vì throw exception
-        return StatusCode(500, new { Code = "server_error", Message = ex.Message });
-    }
-        }
+                if (treatmentPlans == null || !treatmentPlans.Any())
+                {
+                    return NotFound(new { Code = "not_found", Message = "Không tìm thấy kế hoạch điều trị cho khách hàng." });
+                }
 
+                return Ok(treatmentPlans);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Code = "server_error", Message = ex.Message });
+            }
+        }
 
         // Gửi kế hoạch điều trị cho khách hàng
         [HttpPost("send-treatment-plan/{customerId}/{doctorId}")]
@@ -102,6 +113,7 @@ namespace DentalBooking.Controllers
 
             return BadRequest("Không thể tạo kế hoạch điều trị.");
         }
+
         // GET: api/TreatmentPlan/Detail/{treatmentPlanId}
         [HttpGet("Detail/{treatmentPlanId}")]
         public async Task<IActionResult> GetTreatmentPlanDetail(int treatmentPlanId)
@@ -119,10 +131,10 @@ namespace DentalBooking.Controllers
             }
             catch (Exception ex)
             {
-                // Trả về lỗi server thay vì throw exception
                 return StatusCode(500, new { Code = "server_error", Message = ex.Message });
             }
         }
+
         // PUT: api/TreatmentPlan/{treatmentId}
         [HttpPut("Update/{treatmentId}")]
         public async Task<IActionResult> UpdateTreatmentPlan(int treatmentId, [FromBody] TreatmentPlanRequestModelView treatmentPlanRequest)
