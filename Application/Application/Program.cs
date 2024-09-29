@@ -16,6 +16,8 @@ using DentalBooking.Contract.Repository.Entity;
 using DentalBooking_Services.Service;
 using DentalBooking.Contract.Services;
 using Appointment_Service = DentalBooking_Services.Service.Appointment_Service;
+using Castle.Core.Configuration;
+using DentalBooking.ModelViews.MailModelViews;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -115,6 +117,7 @@ try
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IMessageService, MessageService>();
     builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+    builder.Services.AddTransient<ISendMailService, SendMailService>();
 
     // Build app
     var app = builder.Build();

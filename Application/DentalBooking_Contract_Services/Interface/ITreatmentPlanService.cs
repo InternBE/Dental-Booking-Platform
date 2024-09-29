@@ -1,4 +1,6 @@
-﻿using DentalBooking.ModelViews.TreatmentModels;
+﻿using DentalBooking.Contract.Repository.Entity;
+using DentalBooking.ModelViews.MailModelViews;
+using DentalBooking.ModelViews.TreatmentModels;
 using DentalBooking.ModelViews.TreatmentPlanModels;
 using System.Threading.Tasks;
 
@@ -32,5 +34,8 @@ namespace DentalBooking_Contract_Services.Interface
 
         // Gửi kế hoạch điều trị tới khách hàng
         Task SendTreatmentPlanToCustomerAsync(int customerId, int doctorId);
+
+        Task<TreatmentPlans?> GetTreatmentPlanByIdAsync(int id);
+        Task SendTreatmentPlanEmailAsync(int treatmentPlanId);
     }
 }

@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="MailKit" Version="4.7.1.1" />
+		<PackageReference Include="MimeKit" Version="4.7.1" />
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\DentalBooking.ModelViews\DentalBooking.ModelViews.csproj" />
     <ProjectReference Include="..\DentalBooking.Repository\DentalBooking.Repository.csproj" />

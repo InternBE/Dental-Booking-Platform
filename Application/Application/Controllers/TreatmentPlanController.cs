@@ -4,6 +4,8 @@ using DentalBooking_Contract_Services.Interface;
 using System.Threading.Tasks;
 using DentalBooking.Core.Base;
 using DentalBooking.ModelViews.TreatmentPlanModels;
+using DentalBooking.ModelViews.MailModelViews;
+using DentalBooking_Services.Service;
 
 namespace DentalBooking.Controllers
 {
@@ -12,10 +14,12 @@ namespace DentalBooking.Controllers
     public class TreatmentPlanController : ControllerBase
     {
         private readonly ITreatmentPlanService _treatmentService;
+        private readonly ISendMailService _sendMailService;
 
-        public TreatmentPlanController(ITreatmentPlanService treatmentService)
+        public TreatmentPlanController(ITreatmentPlanService treatmentService, ISendMailService sendMailService)
         {
             _treatmentService = treatmentService;
+            _sendMailService = sendMailService;
         }
 
         // Lấy tất cả cuộc hẹn với phân trang
@@ -187,5 +191,24 @@ namespace DentalBooking.Controllers
 
             return BadRequest("Không thể xóa kế hoạch điều trị.");
         }
+
+        // Action gửi email kế hoạch điều trị theo ID
+        [HttpPost("send-treatment-plan-email/{treatmentPlanId}")]
+        public async Task<IActionResult> SendTreatmentPlanEmail(int treatmentPlanId)
+        {
+            try
+            {
+                // Gọi phương thức gửi email kế hoạch điều trị theo ID
+                await _treatmentService.SendTreatmentPlanEmailAsync(treatmentPlanId);
+                return Ok("Email đã được gửi thành công.");
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi
+                return StatusCode(500, $"Lỗi khi gửi email: {ex.Message}");
+            }
+        }
+
+
     }
 }

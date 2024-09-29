@@ -4,16 +4,28 @@ using DentalBooking.Contract.Repository;
 using DentalBooking_Contract_Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using DentalBooking.ModelViews.TreatmentPlanModels;
+using DentalBooking.ModelViews.MailModelViews;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using MailKit.Net.Smtp;
+using DentalBooking.Repository.Context;
+using DentalBooking_Services.Service;
 
 public class TreatmentPlanService : ITreatmentPlanService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly INotificationService _notificationService;
+    private readonly MailSettings _mailSettings;
+    private readonly DatabaseContext _context;
+    private readonly ISendMailService _sendMailService;
 
-    public TreatmentPlanService(IUnitOfWork unitOfWork, INotificationService notificationService)
+    public TreatmentPlanService(IUnitOfWork unitOfWork, INotificationService notificationService, IOptions<MailSettings> mailSettings, DatabaseContext context, ISendMailService sendMailService)
     {
         _unitOfWork = unitOfWork;
         _notificationService = notificationService;
+        _mailSettings = mailSettings.Value;
+        _context = context;
+        _sendMailService = sendMailService;
     }
 
     public async Task<IEnumerable<TreatmentPlanResponseModelView>> GetAllTreatmentPlansAsync()
@@ -223,5 +235,36 @@ public class TreatmentPlanService : ITreatmentPlanService
             StartDate = treatmentPlan.StartDate,
             EndDate = treatmentPlan.EndDate,
         });
+    }
+    public async Task<TreatmentPlans?> GetTreatmentPlanByIdAsync(int id)
+    {
+        return await _context.TreatmentPlans.Include(tp => tp.User).FirstOrDefaultAsync(tp => tp.Id == id);
+    }
+
+    public async Task SendTreatmentPlanEmailAsync(int treatmentPlanId)
+    {
+        // Lấy thông tin kế hoạch điều trị theo ID
+        var treatmentPlan = await GetTreatmentPlanByIdAsync(treatmentPlanId);
+
+        if (treatmentPlan == null || treatmentPlan.User == null)
+        {
+            throw new Exception("Không tìm thấy kế hoạch điều trị hoặc khách hàng.");
+        }
+
+        // Chuẩn bị nội dung email
+        var mailContent = new MailContent
+        {
+            To = treatmentPlan.User.Email,  // Gửi email tới khách hàng
+            Subject = "Kế hoạch điều trị của bạn",
+            Body = $"Kính gửi {treatmentPlan.User.FullName},\n\n" +
+                   $"Dưới đây là thông tin kế hoạch điều trị của bạn:\n\n" +
+                   $"- Mô tả: {treatmentPlan.Description}\n" +
+                   $"- Ngày bắt đầu: {treatmentPlan.StartDate.ToString("dd/MM/yyyy")}\n" +
+                   $"- Ngày kết thúc: {treatmentPlan.EndDate.ToString("dd/MM/yyyy")}\n\n" +
+                   "Trân trọng,\nĐội ngũ nha khoa"
+        };
+
+        // Gửi email
+        await _sendMailService.SendTreatmentPlanEmailAsync(mailContent);
     }
 }
