@@ -66,7 +66,7 @@ namespace DentalBooking.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Code = "server_error", Message = ex.Message });
+                return StatusCode(500, new { Code = "server_error", Message = "Có lỗi xảy ra trong quá trình xử lý yêu cầu.", Error = ex.Message });
             }
         }
 
@@ -108,7 +108,7 @@ namespace DentalBooking.Controllers
             }
             catch (Exception ex)
             {
-                throw new BaseException.CoreException("server_error", ex.Message);
+                return StatusCode(500, new { Code = "server_error", Message = "Có lỗi xảy ra trong quá trình xử lý yêu cầu.", Error = ex.Message });
             }
 
             return BadRequest("Không thể tạo kế hoạch điều trị.");
@@ -131,7 +131,7 @@ namespace DentalBooking.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Code = "server_error", Message = ex.Message });
+                return StatusCode(500, new { Code = "server_error", Message = "Có lỗi xảy ra trong quá trình xử lý yêu cầu.", Error = ex.Message });
             }
         }
 
@@ -149,16 +149,16 @@ namespace DentalBooking.Controllers
                 var result = await _treatmentService.UpdateTreatmentPlanAsync(treatmentId, treatmentPlanRequest);
                 if (result)
                 {
-                    return NoContent();
+                    return Ok(new { Message = "Cập nhật kế hoạch điều trị thành công." });
                 }
             }
             catch (KeyNotFoundException ex)
             {
-                throw new BaseException.BadRequestException("not_found", ex.Message);
+                return NotFound(new { Message = $"Không tìm thấy kế hoạch điều trị với ID:{treatmentId} .", Error = ex.Message });
             }
             catch (Exception ex)
             {
-                throw new BaseException.CoreException("server_error", ex.Message);
+                return StatusCode(500, new { Message = "Có lỗi xảy ra trong quá trình xử lý yêu cầu.", Error = ex.Message });
             }
 
             return BadRequest("Không thể cập nhật kế hoạch điều trị.");
@@ -173,16 +173,16 @@ namespace DentalBooking.Controllers
                 var result = await _treatmentService.DeleteTreatmentPlanAsync(treatmentId);
                 if (result)
                 {
-                    return NoContent();
+                    return Ok(new { Message = "Đã xóa kế hoạch điều trị thành công." });
                 }
             }
             catch (KeyNotFoundException ex)
             {
-                throw new BaseException.BadRequestException("not_found", ex.Message);
+                return NotFound(new { Message = $"Không tìm thấy kế hoạch điều trị với :{treatmentId}.", Error = ex.Message });
             }
             catch (Exception ex)
             {
-                throw new BaseException.CoreException("server_error", ex.Message);
+                return StatusCode(500, new { Message = "Có lỗi xảy ra trong quá trình xử lý yêu cầu.", Error = ex.Message });
             }
 
             return BadRequest("Không thể xóa kế hoạch điều trị.");

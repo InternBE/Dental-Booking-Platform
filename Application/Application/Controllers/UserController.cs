@@ -68,7 +68,7 @@ namespace Application.Controllers
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound(new { message = "User not found" });
+                return NotFound(new { message = "Không tìm thấy người dùng" });
             }
             return Ok(BaseResponse<UserResponseModel>.OkResponse(new UserResponseModel
             {
@@ -95,7 +95,7 @@ namespace Application.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "ADMIN");
-                return Ok(new { message = "User registered successfully" });
+                return Ok(new { message = "Đăng ký tài khoản thành công" });
             }
 
             return BadRequest(result.Errors);
@@ -138,7 +138,7 @@ namespace Application.Controllers
 
             if (id != userModel.Id)
             {
-                return BadRequest("User ID mismatch");
+                return BadRequest("Id Người dùng không hợp lệ");
             }
 
             try
@@ -157,7 +157,7 @@ namespace Application.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound(new { message = "User not found" });
+                return NotFound(new { message = "Không tìm thấy người " });
             }
             catch (ArgumentNullException ex)
             {
@@ -177,7 +177,7 @@ namespace Application.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound(new { message = "User not found" });
+                return NotFound(new { message = "Không tìm thấy người dùng" });
             }
         }
 

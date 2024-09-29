@@ -78,7 +78,7 @@ namespace Application.Controllers
             var appointment = await _appointmentServices.GetAppointmentByIdAsync(id);
             if (appointment == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Không tìm thấy cuộc hẹn nào ." });
             }
 
             var response = new AppointmentRequestModelView
@@ -100,7 +100,7 @@ namespace Application.Controllers
             var response = await _appointmentServices.AllAppointmentsByUserIdAsync(userId);
             if (response.IsNullOrEmpty())
             {
-                return NotFound(new { message = "No appointments found for the user." });
+                return NotFound(new { message = "Không tìm thấy cuộc hẹn nào của tài khoản này." });
             }
 
             return Ok(response);
@@ -113,12 +113,13 @@ namespace Application.Controllers
             var appointmentDayAfter = await _appointmentServices.AlertAppointmentDayAfter(userId, isAlert);
             if (appointmentDayAfter == null)
             {
-                return NotFound(new { message = "No appointments found for tomorrow." });
+                return NotFound(new { message = "Không có cuộc hẹn nào được tìm thấy trong ngày mai." });
             }
             return Ok(appointmentDayAfter);
         }
 
         // POST: api/Appointment/Create
+        [Authorize(Roles = "CUSTOMER")]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequestModelView model)
         {
@@ -151,16 +152,16 @@ namespace Application.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { Message = "Dữ liệu không hợp lệ.", Errors = ModelState });
             }
 
             var result = await _appointmentServices.UpdateAppointmentAsync(id, model);
             if (!result)
             {
-                return NotFound();
+                return NotFound(new { Message = "Không tìm thấy cuộc hẹn ." });
             }
 
-            return NoContent();
+            return Ok(new { Message = "Cập nhật cuộc hẹn thành công." });
         }
 
         // DELETE: api/Appointment/Delete/{id}
@@ -170,14 +171,15 @@ namespace Application.Controllers
             var result = await _appointmentServices.DeleteAppointmentAsync(id);
             if (!result)
             {
-                return NotFound();
+                return NotFound(new { Message = "Không tìm thấy cuộc hẹn." });
             }
 
-            return NoContent();
+            return Ok(new { Message = "Đã xóa cuộc hẹn thành công." });
         }
 
 
-        // POST: api/Appointment/BookPeriodic
+        // POST: api/Appointment/BookPeriodic    
+        [Authorize(Roles = "CUSTOMER")]
         [HttpPost("BookPeriodic")]
         public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model, [FromQuery] int months = 12)
         {
@@ -224,7 +226,7 @@ namespace Application.Controllers
                     return Unauthorized(new BaseResponse<string>
                     {
                         Success = false,
-                        Message = "Dentist ID not found in token."
+                        Message = "Không tìm thấy nha sĩ."
                     });
                 }
 
@@ -233,7 +235,7 @@ namespace Application.Controllers
                     return BadRequest(new BaseResponse<string>
                     {
                         Success = false,
-                        Message = "Invalid Dentist ID."
+                        Message = "Không tìm thấy nha sĩ."
                     });
                 }
 
@@ -243,7 +245,7 @@ namespace Application.Controllers
                     return NotFound(new BaseResponse<string>
                     {
                         Success = false,
-                        Message = "No appointments found for the dentist this week."
+                        Message = "Không có lịch khảm nào trong tuần cho nha sĩ này."
                     });
                 }
 
@@ -251,7 +253,7 @@ namespace Application.Controllers
                 {
                     Success = true,
                     Data = appointments,
-                    Message = "Successfully retrieved the weekly schedule."
+                    Message = "Đã lấy thành công lịch trình hàng tuần."
                 });
             }
             catch (Exception ex)
@@ -264,6 +266,7 @@ namespace Application.Controllers
             }
         }
         // Lên lịch tái khám
+        [Authorize(Roles = "DENTIST")]
         [HttpPost("appointments/{id}/followup")]
         public async Task<ActionResult<DentistResponseModelView>> ScheduleFollowUp(int id)
         {
