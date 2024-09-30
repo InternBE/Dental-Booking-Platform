@@ -192,23 +192,30 @@ namespace DentalBooking.Controllers
             return BadRequest("Không thể xóa kế hoạch điều trị.");
         }
 
-        // Action gửi email kế hoạch điều trị theo ID
         [HttpPost("send-treatment-plan-email/{treatmentPlanId}")]
         public async Task<IActionResult> SendTreatmentPlanEmail(int treatmentPlanId)
         {
+            // Kiểm tra xem ID có hợp lệ không
+            if (treatmentPlanId <= 0)
+            {
+                return BadRequest("ID kế hoạch điều trị không hợp lệ.");
+            }
+
             try
             {
-                // Gọi phương thức gửi email kế hoạch điều trị theo ID
+                // Gửi email kế hoạch điều trị với ID kế hoạch
                 await _treatmentService.SendTreatmentPlanEmailAsync(treatmentPlanId);
                 return Ok("Email đã được gửi thành công.");
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi
+                // Xử lý lỗi nếu có
+                // Ghi lại thông tin lỗi (nếu có logger)
+                // logger.LogError(ex, "Có lỗi khi gửi email kế hoạch điều trị với ID {TreatmentPlanId}", treatmentPlanId);
+
                 return StatusCode(500, $"Lỗi khi gửi email: {ex.Message}");
             }
         }
-
 
     }
 }

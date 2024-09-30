@@ -18,6 +18,11 @@ using DentalBooking.Contract.Services;
 using Appointment_Service = DentalBooking_Services.Service.Appointment_Service;
 using Castle.Core.Configuration;
 using DentalBooking.ModelViews.MailModelViews;
+using System.Net;
+using System.Net.Mail;
+using Microsoft.Extensions.Options;
+using MailKit.Net.Smtp;
+using MimeKit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -118,6 +123,10 @@ try
     builder.Services.AddScoped<IMessageService, MessageService>();
     builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
     builder.Services.AddTransient<ISendMailService, SendMailService>();
+
+    builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+
 
     // Build app
     var app = builder.Build();

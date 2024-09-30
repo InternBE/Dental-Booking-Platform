@@ -9,6 +9,7 @@ namespace DentalBooking.ModelViews.MailModelViews
     public class MailContent
     {
         public string To { get; set; }
+        public string ToDisplayName { get; set; } // Tên hiển thị
         public string Subject { get; set; }
         public string Body { get; set; }
     }

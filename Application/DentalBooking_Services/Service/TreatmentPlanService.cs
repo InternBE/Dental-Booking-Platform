@@ -251,20 +251,30 @@ public class TreatmentPlanService : ITreatmentPlanService
             throw new Exception("Không tìm thấy kế hoạch điều trị hoặc khách hàng.");
         }
 
+        // Kiểm tra địa chỉ email
+        if (string.IsNullOrWhiteSpace(treatmentPlan.User.Email))
+        {
+            throw new Exception("Địa chỉ email của khách hàng không hợp lệ.");
+        }
+
         // Chuẩn bị nội dung email
         var mailContent = new MailContent
         {
             To = treatmentPlan.User.Email,  // Gửi email tới khách hàng
             Subject = "Kế hoạch điều trị của bạn",
-            Body = $"Kính gửi {treatmentPlan.User.FullName},\n\n" +
-                   $"Dưới đây là thông tin kế hoạch điều trị của bạn:\n\n" +
-                   $"- Mô tả: {treatmentPlan.Description}\n" +
-                   $"- Ngày bắt đầu: {treatmentPlan.StartDate.ToString("dd/MM/yyyy")}\n" +
-                   $"- Ngày kết thúc: {treatmentPlan.EndDate.ToString("dd/MM/yyyy")}\n\n" +
-                   "Trân trọng,\nĐội ngũ nha khoa"
+            Body = $"<p>Kính gửi {treatmentPlan.User.FullName},</p>" +
+                   $"<p>Dưới đây là thông tin kế hoạch điều trị của bạn:</p>" +
+                   $"<table style='border-collapse: collapse; width: 100%;'>" +
+                   $"<tr><th style='border: 1px solid #ddd; padding: 8px;'>Mô tả</th><td style='border: 1px solid #ddd; padding: 8px;'>{treatmentPlan.Description}</td></tr>" +
+                   $"<tr><th style='border: 1px solid #ddd; padding: 8px;'>Ngày bắt đầu</th><td style='border: 1px solid #ddd; padding: 8px;'>{treatmentPlan.StartDate:dd/MM/yyyy}</td></tr>" +
+                   $"<tr><th style='border: 1px solid #ddd; padding: 8px;'>Ngày kết thúc</th><td style='border: 1px solid #ddd; padding: 8px;'>{treatmentPlan.EndDate:dd/MM/yyyy}</td></tr>" +
+                   $"</table>" +
+                   "<p>Trân trọng,<br>Đội ngũ nha khoa</p>"
         };
 
         // Gửi email
-        await _sendMailService.SendTreatmentPlanEmailAsync(mailContent);
+        await _sendMailService.SendMail(mailContent); // Gọi phương thức SendMail
     }
+
+
 }
