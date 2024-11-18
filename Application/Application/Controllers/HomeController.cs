@@ -1,5 +1,6 @@
 ﻿using DentalBooking.Contract.Services;
 using DentalBooking_Services.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Controllers
@@ -12,6 +13,7 @@ namespace Application.Controllers
             _services = serviceServices;
         }
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetAllServices()
         {
             var services = await _services.GetAllServicesAsync();

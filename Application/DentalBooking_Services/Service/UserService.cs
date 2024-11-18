@@ -136,6 +136,11 @@ public class UserService : IUserService
         if (doctor == null) return false;
 
         doctor.IsApproved = true;
+        //var role = await _userManager.GetRolesAsync(doctor);
+        //var removeResult = await _userManager.RemoveFromRolesAsync(doctor, role);
+        //if (!removeResult.Succeeded) return false;
+
+        //var addResult = await _userManager.AddToRoleAsync(doctor, "Dentist");
         await _userManager.UpdateAsync(doctor);
         return true;
     }

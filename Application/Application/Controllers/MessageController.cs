@@ -4,6 +4,7 @@ using DentalBooking_Contract_Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DentalBooking.Controllers
 {
@@ -20,6 +21,7 @@ namespace DentalBooking.Controllers
 
         // Gửi tin nhắn
         [HttpPost("send")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> SendMessage([FromBody] MessageRequestModelView messageRequest)
         {
             if (!ModelState.IsValid)
@@ -45,6 +47,7 @@ namespace DentalBooking.Controllers
 
         // Lấy tất cả tin nhắn giữa hai người dùng
         [HttpGet("{senderId}/{receiverId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetMessages(int senderId, int receiverId)
         {
             try
@@ -60,6 +63,7 @@ namespace DentalBooking.Controllers
 
         // Đánh dấu tin nhắn là đã đọc
         [HttpPut("mark-as-read/{messageId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> MarkMessageAsRead(int messageId)
         {
             try

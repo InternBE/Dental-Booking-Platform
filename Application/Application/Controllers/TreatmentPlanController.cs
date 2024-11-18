@@ -6,6 +6,7 @@ using DentalBooking.Core.Base;
 using DentalBooking.ModelViews.TreatmentPlanModels;
 using DentalBooking.ModelViews.MailModelViews;
 using DentalBooking_Services.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DentalBooking.Controllers
 {
@@ -24,6 +25,7 @@ namespace DentalBooking.Controllers
 
         // Lấy tất cả cuộc hẹn với phân trang
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetPaginatedTreatmentPlans([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
@@ -55,6 +57,7 @@ namespace DentalBooking.Controllers
 
         // GET: api/TreatmentPlan/{customerId}
         [HttpGet("GetAll/{customerId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetTreatmentPlan(int customerId)
         {
             try
@@ -76,6 +79,7 @@ namespace DentalBooking.Controllers
 
         // Gửi kế hoạch điều trị cho khách hàng
         [HttpPost("send-treatment-plan/{customerId}/{doctorId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> SendTreatmentPlan(int customerId, int doctorId)
         {
             try
@@ -95,6 +99,7 @@ namespace DentalBooking.Controllers
 
         // POST: api/TreatmentPlan
         [HttpPost("Create")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> CreateTreatmentPlan([FromBody] TreatmentPlanRequestModelView treatmentPlanRequest)
         {
             if (!ModelState.IsValid)
@@ -120,6 +125,7 @@ namespace DentalBooking.Controllers
 
         // GET: api/TreatmentPlan/Detail/{treatmentPlanId}
         [HttpGet("Detail/{treatmentPlanId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetTreatmentPlanDetail(int treatmentPlanId)
         {
             try
@@ -141,6 +147,7 @@ namespace DentalBooking.Controllers
 
         // PUT: api/TreatmentPlan/{treatmentId}
         [HttpPut("Update/{treatmentId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> UpdateTreatmentPlan(int treatmentId, [FromBody] TreatmentPlanRequestModelView treatmentPlanRequest)
         {
             if (!ModelState.IsValid)
@@ -170,6 +177,7 @@ namespace DentalBooking.Controllers
 
         // DELETE: api/TreatmentPlan/{treatmentId}
         [HttpDelete("Delete/{treatmentId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> DeleteTreatmentPlan(int treatmentId)
         {
             try
@@ -193,6 +201,7 @@ namespace DentalBooking.Controllers
         }
 
         [HttpPost("send-treatment-plan-email/{treatmentPlanId}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> SendTreatmentPlanEmail(int treatmentPlanId)
         {
             // Kiểm tra xem ID có hợp lệ không

@@ -1,5 +1,6 @@
 ﻿using DentalBooking.Contract.Services;
 using DentalBooking.ModelViews.ServiceModelViews;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DentalBooking.API.Controllers
@@ -17,6 +18,7 @@ namespace DentalBooking.API.Controllers
 
         // GET: api/Service
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetPaginatedServices([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (pageNumber <= 0 || pageSize <= 0)
@@ -41,6 +43,7 @@ namespace DentalBooking.API.Controllers
 
         // GET: api/Service/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetServiceById(int id)
         {
             var service = await _serviceServices.GetServiceByIdAsync(id);
@@ -53,6 +56,7 @@ namespace DentalBooking.API.Controllers
 
         // POST: api/Service/Create
         [HttpPost("Create")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> CreateService([FromBody] ServiceRequestModelView model)
         {
             if (!ModelState.IsValid)
@@ -66,6 +70,7 @@ namespace DentalBooking.API.Controllers
 
         // PUT: api/Service/Update/{id}
         [HttpPut("Update/{id}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> UpdateService(int id, [FromBody] ServiceRequestModelView model)
         {
             if (!ModelState.IsValid)
@@ -84,6 +89,7 @@ namespace DentalBooking.API.Controllers
 
         // DELETE: api/Service/Delete/{id}
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> DeleteService(int id)
         {
             var result = await _serviceServices.DeleteServiceAsync(id);

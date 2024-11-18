@@ -25,6 +25,7 @@ namespace Application.Controllers
 
         // GET: api/Appointment/all
         [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllAppointments()
         {
             var appointments = await _appointmentServices.GetAllAppointmentsAsync();
@@ -42,6 +43,7 @@ namespace Application.Controllers
 
         // GET: api/Appointment
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetPaginatedAppointments([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (pageNumber <= 0 || pageSize <= 0)
@@ -73,6 +75,7 @@ namespace Application.Controllers
 
         // GET: api/Appointment/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> GetAppointmentById(int id)
         {
             var appointment = await _appointmentServices.GetAppointmentByIdAsync(id);
@@ -95,6 +98,7 @@ namespace Application.Controllers
 
         // GET: api/Appointment/AllAppointmentByUserId
         [HttpGet("AllAppointmentByUserId")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> AllAppointmentByUserId([FromQuery] int userId)
         {
             var response = await _appointmentServices.AllAppointmentsByUserIdAsync(userId);
@@ -108,6 +112,7 @@ namespace Application.Controllers
 
         // GET: api/Appointment/AlertDayAfter
         [HttpGet("AlertDayAfter")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> Alert([FromQuery] int userId, [FromQuery] bool isAlert = true)
         {
             var appointmentDayAfter = await _appointmentServices.AlertAppointmentDayAfter(userId, isAlert);
@@ -119,7 +124,7 @@ namespace Application.Controllers
         }
 
         // POST: api/Appointment/Create
-        [Authorize(Roles = "CUSTOMER")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequestModelView model)
         {
@@ -148,6 +153,7 @@ namespace Application.Controllers
 
         // PUT: api/Appointment/Update/{id}
         [HttpPut("Update/{id}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> UpdateAppointment(int id, [FromBody] AppointmentRequestModelView model)
         {
             if (!ModelState.IsValid)
@@ -166,6 +172,7 @@ namespace Application.Controllers
 
         // DELETE: api/Appointment/Delete/{id}
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
             var result = await _appointmentServices.DeleteAppointmentAsync(id);
@@ -179,7 +186,7 @@ namespace Application.Controllers
 
 
         // POST: api/Appointment/BookPeriodic    
-        [Authorize(Roles = "CUSTOMER")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpPost("BookPeriodic")]
         public async Task<IActionResult> BookPeriodicAppointments([FromBody] AppointmentRequestModelView model, [FromQuery] int months = 12)
         {
@@ -214,7 +221,7 @@ namespace Application.Controllers
         }
 
         // GET: api/Appointment/dentist-weekly-schedule
-        [Authorize(Roles = "DENTIST")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpGet("dentist-weekly-schedule")]
         public async Task<IActionResult> GetWeeklyScheduleForDentist()
         {
@@ -266,7 +273,7 @@ namespace Application.Controllers
             }
         }
         // Lên lịch tái khám
-        [Authorize(Roles = "DENTIST")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpPost("appointments/{id}/followup")]
         public async Task<ActionResult<DentistResponseModelView>> ScheduleFollowUp(int id)
         {

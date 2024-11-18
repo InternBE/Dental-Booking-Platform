@@ -35,7 +35,7 @@ namespace Application.Controllers
         }
 
         // Lấy danh sách tất cả người dùng (Chỉ Admin mới có quyền truy cập) với phân trang
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -60,7 +60,7 @@ namespace Application.Controllers
         }
 
         // Lấy thông tin người dùng theo ID
-        [Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         //[Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
@@ -94,7 +94,7 @@ namespace Application.Controllers
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "ADMIN");
+                await _userManager.AddToRoleAsync(user, "CUSTOMER");
                 return Ok(new { message = "Đăng ký tài khoản thành công" });
             }
 
@@ -127,7 +127,7 @@ namespace Application.Controllers
         }
 
         // Cập nhật thông tin người dùng
-        [Authorize(Roles = "ADMIN,CUSTOMER,DENTIST")]
+        [Authorize(Roles = "Admin,Customer,Dentist")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel userModel)
         {
@@ -166,7 +166,7 @@ namespace Application.Controllers
         }
 
         // Xóa người dùng
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

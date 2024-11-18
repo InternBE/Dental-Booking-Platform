@@ -1,4 +1,5 @@
 ﻿using DentalBooking_Contract_Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace Application.Controllers
         }
 
         // Xét duyệt phòng khám
+        [Authorize(Roles = "Admin")]
         [HttpPut("approve-clinic/{clinicId}")]
         public async Task<ActionResult> ApproveClinic(int clinicId)
         {
@@ -31,6 +33,7 @@ namespace Application.Controllers
         }
 
         // Xét duyệt bác sĩ
+        [Authorize(Roles = "Admin")]
         [HttpPut("approve-doctor/{doctorId}")]
         public async Task<ActionResult> ApproveDoctor(string doctorId)
         {
